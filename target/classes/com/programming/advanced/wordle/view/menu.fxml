@@ -1,6 +1,0 @@
-<!-- メニュー画面のFXML -->
-<?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.MenuController">
-    <!-- TODO: メニュー画面のUI要素 -->
-</AnchorPane>
