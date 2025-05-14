@@ -69,9 +69,7 @@ public class GameController {
                 case BACK_SPACE:
                     // バックスペースキーの処理
                     if (cell.getText().isEmpty() && currentCol > 0) {
-                        currentCol--;
-                        gridCells[currentRow][currentCol].setEditable(true);
-                        gridCells[currentRow][currentCol].requestFocus();
+                        handleBackspace();
                     }
                     break;
                 default:
@@ -93,9 +91,9 @@ public class GameController {
     private void setupKeyboard() {
         String[] rows = {
                 "わらやまはなたさかあ",
-                "をり　みひにちしきい",
+                "をり みひにちしきい",
                 "んるゆむふぬつすくう",
-                "　れ　めへねてせけえ",
+                " れ めへねてせけえ",
                 "ーろよもほのとそこお"
         };
 
@@ -104,7 +102,7 @@ public class GameController {
             String keys = rows[row];
             for (int col = 0; col < keys.length(); col++) {
                 String letter = String.valueOf(keys.charAt(col));
-                if (letter.equals("　")) {
+                if (letter.equals(" ")) {
                     Region spacer = new Region();
                     spacer.setPrefSize(40, 40);
                     keyboard.add(spacer, col, row);
@@ -114,14 +112,54 @@ public class GameController {
                 }
             }
         }
+
+        // アクションキー
+        Button backspaceKey = createActionKeyButton("backspace");
+        Button enterKey = createActionKeyButton("enter");
+
+        keyboard.add(backspaceKey, rows[0].length() + 1, 0);
+        keyboard.add(enterKey, rows[0].length() + 1, 4);
     }
 
+    // アクションキーの作成
+    private Button createActionKeyButton(String text) {
+        Button button = new Button(text);
+        button.getStyleClass().addAll("keyboard-button", "action-key");
+        button.setFocusTraversable(false);
+        button.setOnAction(e -> {
+            if (text.equals("backspace")) {
+                handleBackspace();
+            } else if (text.equals("enter") || currentCol == WORD_LENGTH) {
+                // TODO: 答えをチェックする
+            }
+        });
+        return button;
+    }
+
+    // 文字キーの作成
     private Button createKeyboardButton(String text) {
         Button button = new Button(text);
         button.getStyleClass().add("keyboard-button");
         button.setFocusTraversable(false);
         button.setOnAction(e -> handleKeyPress(text));
         return button;
+    }
+
+    // backspaceの処理
+    private void handleBackspace() {
+        if (currentCol > 0) {
+            TextField currentCell = gridCells[currentRow][currentCol];
+            if (!currentCell.getText().isEmpty()) {
+                currentCell.setText("");
+            } else {
+                currentCol--;
+                currentCell = gridCells[currentRow][currentCol];
+                currentCell.setText("");
+                currentCell.setEditable(true);
+                currentCell.requestFocus();
+            }
+            
+        }
     }
 
     private void handleKeyPress(String letter) {

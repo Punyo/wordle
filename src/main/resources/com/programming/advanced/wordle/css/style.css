@@ -15,3 +15,7 @@
     -fx-max-width: 40px;
     -fx-max-height: 40px;
 }
+
+.action-key {
+    -fx-min-width: 100px;
+}
