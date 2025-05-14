@@ -1,3 +1,7 @@
+.root {
+    -fx-font-family: "Noto Sans CJK JP", "Yu Gothic", "MS Gothic", sans-serif;
+}
+
 .letter-box {
     -fx-min-width: 50px;
     -fx-min-height: 50px;

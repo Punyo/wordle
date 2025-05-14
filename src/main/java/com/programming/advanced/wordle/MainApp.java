@@ -17,7 +17,11 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        System.setProperty("prism.lcdtext", "false");
+        System.setProperty("prism.text", "t2k");
+
         scene = new Scene(loadFXML("game"), 540, 720);
+        scene.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }

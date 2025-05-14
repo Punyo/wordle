@@ -39,12 +39,13 @@ public class GameController {
                 wordgrid.add(cell, col, row);
 
                 // 最初の行以外は編集できない
-                if (row != 0) {
+                if (row != 0 || col != 0) {
                     cell.setEditable(false);
-                    cell.setFocusTraversable(false);
                 }
             }
         }
+        gridCells[0][0].setFocusTraversable(true);
+        gridCells[0][0].requestFocus();
     }
 
     private TextField createGridCell() {
@@ -52,6 +53,9 @@ public class GameController {
         cell.setPrefSize(50, 50);
         cell.getStyleClass().add("letter-box");
         cell.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // マウス操作でフォーカスを移動しない
+        cell.setMouseTransparent(true);
 
         // 1文字以上入力できない
         cell.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -64,8 +68,9 @@ public class GameController {
             switch (e.getCode()) {
                 case BACK_SPACE:
                     // バックスペースキーの処理
-                    if (cell.getText().isEmpty() && currentCol > 0 ) {
+                    if (cell.getText().isEmpty() && currentCol > 0) {
                         currentCol--;
+                        gridCells[currentRow][currentCol].setEditable(true);
                         gridCells[currentRow][currentCol].requestFocus();
                     }
                     break;
@@ -74,6 +79,7 @@ public class GameController {
                     if (cell.getText().length() == 1) {
                         if (currentCol < WORD_LENGTH - 1) {
                             currentCol++;
+                            gridCells[currentRow][currentCol].setEditable(true);
                             gridCells[currentRow][currentCol].requestFocus();
                         }
                     }
@@ -92,7 +98,7 @@ public class GameController {
                 "　れ　めへねてせけえ",
                 "ーろよもほのとそこお"
         };
-        
+
         // キーボードの構築
         for (int row = 0; row < rows.length; row++) {
             String keys = rows[row];
@@ -113,6 +119,7 @@ public class GameController {
     private Button createKeyboardButton(String text) {
         Button button = new Button(text);
         button.getStyleClass().add("keyboard-button");
+        button.setFocusTraversable(false);
         button.setOnAction(e -> handleKeyPress(text));
         return button;
     }
