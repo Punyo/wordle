@@ -1,5 +1,7 @@
 package com.programming.advanced.wordle.controller;
 
+import com.ibm.icu.text.Transliterator;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -15,13 +17,16 @@ public class GameController {
     private GridPane keyboard;
 
     // ゲーム設定
-    private static final int WORD_LENGTH = 5;
+    private static final int WORD_LENGTH = 5; // 文字の長さ
     private static final int MAX_TRIES = 6; // 試行回数
 
     // ゲームの状態管理
     private TextField[][] gridCells;
     private int currentRow = 0;
     private int currentCol = 0;
+
+    // ローマ字からひらがなに変換するやつ
+    private Transliterator transliterator = Transliterator.getInstance("Latin-Hiragana");
 
     // 初期化
     @FXML
@@ -38,12 +43,13 @@ public class GameController {
                 gridCells[row][col] = cell;
                 wordgrid.add(cell, col, row);
 
-                // 最初の行以外は編集できない
+                // 最初の文字以外は編集できない
                 if (row != 0 || col != 0) {
                     cell.setEditable(false);
                 }
             }
         }
+        // 最初のcellの編集権限とフォーカスを設定
         gridCells[0][0].setFocusTraversable(true);
         gridCells[0][0].requestFocus();
     }
@@ -57,30 +63,28 @@ public class GameController {
         // マウス操作でフォーカスを移動しない
         cell.setMouseTransparent(true);
 
-        // 1文字以上入力できない
+        // ひらがなに変換する
         cell.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.length() > 1) {
-                cell.setText(newValue.substring(0, 1));
+            if (newValue.matches("[aiueoAIUEO]")) {
+                String hiragana = transliterator.transliterate(newValue);
+                cell.setText(hiragana);
+                moveToNextCell();
+            } else if (newValue.length() == 2) {
+                String hiragana = transliterator.transliterate(newValue);
+                if (hiragana.length() > 1) {
+                    hiragana = hiragana.substring(0, 1);
+                }
+                cell.setText(hiragana);
+                moveToNextCell();
             }
         });
 
         cell.setOnKeyReleased(e -> {
             switch (e.getCode()) {
                 case BACK_SPACE:
-                    // バックスペースキーの処理
-                    if (cell.getText().isEmpty() && currentCol > 0) {
-                        handleBackspace();
-                    }
+                    handleBackspace();
                     break;
                 default:
-                    // 文字入力されたときの処理
-                    if (cell.getText().length() == 1) {
-                        if (currentCol < WORD_LENGTH - 1) {
-                            currentCol++;
-                            gridCells[currentRow][currentCol].setEditable(true);
-                            gridCells[currentRow][currentCol].requestFocus();
-                        }
-                    }
                     break;
             }
         });
@@ -141,8 +145,19 @@ public class GameController {
         Button button = new Button(text);
         button.getStyleClass().add("keyboard-button");
         button.setFocusTraversable(false);
-        button.setOnAction(e -> handleKeyPress(text));
+        button.setOnAction(e -> {
+            handleKeyPress(text);
+        });
         return button;
+    }
+
+    // 次のcellに移動する
+    private void moveToNextCell() {
+        if (currentCol < WORD_LENGTH - 1) {
+            currentCol++;
+            gridCells[currentRow][currentCol].setEditable(true);
+            gridCells[currentRow][currentCol].requestFocus();
+        }
     }
 
     // backspaceの処理
@@ -150,20 +165,26 @@ public class GameController {
         if (currentCol > 0) {
             TextField currentCell = gridCells[currentRow][currentCol];
             if (!currentCell.getText().isEmpty()) {
+                // 現在のセルに文字がある場合は、その文字を消す
                 currentCell.setText("");
             } else {
+                // 現在のセルが空の場合は、前のセルに移動
                 currentCol--;
                 currentCell = gridCells[currentRow][currentCol];
                 currentCell.setText("");
                 currentCell.setEditable(true);
                 currentCell.requestFocus();
             }
-            
         }
     }
 
+    // 文字キーの入力処理
     private void handleKeyPress(String letter) {
-        // TODO: キーボード押したときの処理
+        TextField currentCell = gridCells[currentRow][currentCol];
+        if (currentCol < WORD_LENGTH && currentCell.getText().isEmpty()) {
+            currentCell.setText(letter);
+            moveToNextCell();
+        }
     }
 
     // TODO: ゲーム画面のロジック

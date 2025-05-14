@@ -7,6 +7,8 @@
     -fx-min-height: 50px;
     -fx-max-width: 50px;
     -fx-max-height: 50px;
+    -fx-alignment: center;
+    -fx-display-caret: false;
 }
 
 .keyboard-button {
