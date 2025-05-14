@@ -1,0 +1,23 @@
+.root {
+    -fx-font-family: "Noto Sans CJK JP", "Yu Gothic", "MS Gothic", sans-serif;
+}
+
+.letter-box {
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-max-width: 50px;
+    -fx-max-height: 50px;
+    -fx-alignment: center;
+    -fx-display-caret: false;
+}
+
+.keyboard-button {
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+}
+
+.action-key {
+    -fx-min-width: 100px;
+}

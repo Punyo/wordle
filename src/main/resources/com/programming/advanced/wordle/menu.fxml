@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.AnchorPane?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="controller.MenuController">
+    <children>
+        <Label text="WORDLE" />
+        <Button fx:id="startButton" text="Game Start" onAction=""/>
+    </children>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</VBox>

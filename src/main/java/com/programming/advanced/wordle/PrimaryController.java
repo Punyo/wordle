@@ -10,3 +10,4 @@ public class PrimaryController {
         MainApp.setRoot("secondary");
     }
 }
+
