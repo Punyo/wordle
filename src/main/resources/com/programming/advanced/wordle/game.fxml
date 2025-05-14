@@ -18,6 +18,7 @@
     prefHeight="640"
     stylesheets="@css/style.css">
 
+    <!-- タイトル -->
     <Label text="WORDLE" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
     <!-- 入力ボックス -->

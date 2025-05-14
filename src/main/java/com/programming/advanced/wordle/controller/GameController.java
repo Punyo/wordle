@@ -14,13 +14,16 @@ public class GameController {
     @FXML
     private GridPane keyboard;
 
+    // ゲーム設定
     private static final int WORD_LENGTH = 5;
     private static final int MAX_TRIES = 6; // 試行回数
 
+    // ゲームの状態管理
     private TextField[][] gridCells;
     private int currentRow = 0;
     private int currentCol = 0;
 
+    // 初期化
     @FXML
     public void initialize() {
         gridCells = new TextField[MAX_TRIES][WORD_LENGTH];
@@ -49,6 +52,8 @@ public class GameController {
         cell.setPrefSize(50, 50);
         cell.getStyleClass().add("letter-box");
         cell.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // 1文字以上入力できない
         cell.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() > 1) {
                 cell.setText(newValue.substring(0, 1));
@@ -58,12 +63,14 @@ public class GameController {
         cell.setOnKeyReleased(e -> {
             switch (e.getCode()) {
                 case BACK_SPACE:
+                    // バックスペースキーの処理
                     if (cell.getText().isEmpty() && currentCol > 0 ) {
                         currentCol--;
                         gridCells[currentRow][currentCol].requestFocus();
                     }
                     break;
                 default:
+                    // 文字入力されたときの処理
                     if (cell.getText().length() == 1) {
                         if (currentCol < WORD_LENGTH - 1) {
                             currentCol++;
@@ -86,6 +93,7 @@ public class GameController {
                 "ーろよもほのとそこお"
         };
         
+        // キーボードの構築
         for (int row = 0; row < rows.length; row++) {
             String keys = rows[row];
             for (int col = 0; col < keys.length(); col++) {
