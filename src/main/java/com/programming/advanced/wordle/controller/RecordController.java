@@ -1,6 +1,5 @@
 package com.programming.advanced.wordle.controller;
 
-import com.programming.advanced.wordle.model.Record;
 import com.programming.advanced.wordle.model.Word;
 
 import javafx.collections.FXCollections;
@@ -14,22 +13,26 @@ public class RecordController {
     @FXML
     private TableView<Word> tableView;
     @FXML
-    private TableColumn<Word, Integer> rankColumn; //　順位
+    private TableColumn<Word, Integer> rankColumn; // 順位
     @FXML
-    private TableColumn<Word, String> nameColumn; //　単語
+    private TableColumn<Word, String> nameColumn; // 単語
     @FXML
-    private TableColumn<Word, Integer> countColumn; //　出題された階数
+    private TableColumn<Word, Integer> countColumn; // 出題された階数
     @FXML
     private TableColumn<Word, Double> successRateColumn; // 成功率
 
     @FXML
     public void initialize() {
-        rankColumn.setCellValueFactory(new PropertyValueFactory<>("rank"));
+
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("word"));
         countColumn.setCellValueFactory(new PropertyValueFactory<>("playCount"));
-        successRateColumn.setCellValueFactory(new PropertyValueFactory<>("successRate"));
-        
-        tableView.getItems().add(new Word(01, "apple", 10, 5, 5));
+
+        // サンプルデータ
+        ObservableList<Word> words = FXCollections.observableArrayList(
+                new Word(1, "apple", 10, 8, 5),
+                new Word(2, "shine", 8, 6, 4)
+        );
+        tableView.setItems(words);
 
         // テーブルの列の幅を自動で調整
         tableView.setTableMenuButtonVisible(false);
