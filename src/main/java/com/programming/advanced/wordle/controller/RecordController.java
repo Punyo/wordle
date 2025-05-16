@@ -9,7 +9,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 
 public class RecordController {
     @FXML
@@ -34,7 +33,7 @@ public class RecordController {
 
         // サンプルデータ
         ObservableList<String> playRecords = FXCollections.observableArrayList(
-                "Single", "Double", "inukaki");
+                "Single", "Double", "inukaki", "tamago", "egg");
         listView.setItems(playRecords);
 
         // TableViewの初期化
