@@ -2,6 +2,8 @@ package com.programming.advanced.wordle.controller;
 
 import com.ibm.icu.text.Transliterator;
 
+import com.programming.advanced.wordle.service.GameService;
+import com.programming.advanced.wordle.service.WordBoxStatus;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -20,6 +22,10 @@ public class GameController {
     private static final int WORD_LENGTH = 5; // 文字の長さ
     private static final int MAX_TRIES = 6; // 試行回数
 
+    private final GameService gameService = GameService.getInstance();
+
+    private String currentTryInput = ""; // 現在の単語
+
     // ゲームの状態管理
     private TextField[][] gridCells;
     private int currentRow = 0;
@@ -31,7 +37,9 @@ public class GameController {
     // 初期化
     @FXML
     public void initialize() {
+        String word = "あいうえお"; // TODO: 単語を取得する
         gridCells = new TextField[MAX_TRIES][WORD_LENGTH];
+        gameService.startNewGame(word, MAX_TRIES, WORD_LENGTH);
         setupWordGrid();
         setupKeyboard();
     }
@@ -133,8 +141,11 @@ public class GameController {
         button.setOnAction(e -> {
             if (text.equals("backspace")) {
                 handleBackspace();
-            } else if (text.equals("enter") || currentCol == WORD_LENGTH) {
-                // TODO: 答えをチェックする
+            } else if (text.equals("enter") && currentTryInput.length() == WORD_LENGTH) {
+                WordBoxStatus[] status = gameService.checkWord(currentTryInput);
+                updateCurrentRowCellsColor(status);
+                moveToNextRow();
+                currentTryInput = "";
             }
         });
         return button;
@@ -160,6 +171,15 @@ public class GameController {
         }
     }
 
+    private void moveToNextRow() {
+        if (currentRow < MAX_TRIES) {
+            currentRow++;
+            currentCol = 0;
+            gridCells[currentRow][currentCol].setEditable(true);
+            gridCells[currentRow][currentCol].requestFocus();
+        }
+    }
+
     // backspaceの処理
     private void handleBackspace() {
         if (currentCol > 0) {
@@ -178,11 +198,31 @@ public class GameController {
         }
     }
 
+    public void updateCurrentRowCellsColor(WordBoxStatus[] status) {
+        TextField[] cells = gridCells[currentRow];
+        for (int i = 0; i < cells.length; i++) {
+            cells[i].getStyleClass().removeAll("correct-letter", "present-letter", "absent-letter");
+
+            switch (status[i]) {
+                case CORRECT:
+                    cells[i].getStyleClass().add("correct-letter");
+                    break;
+                case IN_WORD:
+                    cells[i].getStyleClass().add("present-letter");
+                    break;
+                case NOT_IN_WORD:
+                    cells[i].getStyleClass().add("absent-letter");
+                    break;
+            }
+        }
+    }
+
     // 文字キーの入力処理
     private void handleKeyPress(String letter) {
         TextField currentCell = gridCells[currentRow][currentCol];
         if (currentCol < WORD_LENGTH && currentCell.getText().isEmpty()) {
             currentCell.setText(letter);
+            currentTryInput += letter;
             moveToNextCell();
         }
     }
