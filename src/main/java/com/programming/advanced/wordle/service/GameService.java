@@ -43,6 +43,7 @@ public class GameService {
                 status[i] = WordBoxStatus.NOT_IN_WORD;
             }
         }
+        remainingAttempts--;
         return status;
     }
 
