@@ -141,7 +141,7 @@ public class GameController {
         button.setOnAction(e -> {
             if (text.equals("backspace")) {
                 handleBackspace();
-            } else if (text.equals("enter") || currentCol == WORD_LENGTH) {
+            } else if (text.equals("enter") && currentTryInput.length() == WORD_LENGTH) {
                 WordBoxStatus[] status = gameService.checkWord(currentTryInput);
                 updateCurrentRowCellsColor(status);
                 moveToNextRow();
