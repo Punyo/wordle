@@ -144,6 +144,7 @@ public class GameController {
             } else if (text.equals("enter") || currentCol == WORD_LENGTH) {
                 WordBoxStatus[] status = gameService.checkWord(currentTryInput);
                 updateCurrentRowCellsColor(status);
+                moveToNextRow();
                 currentTryInput = "";
             }
         });
@@ -165,6 +166,15 @@ public class GameController {
     private void moveToNextCell() {
         if (currentCol < WORD_LENGTH - 1) {
             currentCol++;
+            gridCells[currentRow][currentCol].setEditable(true);
+            gridCells[currentRow][currentCol].requestFocus();
+        }
+    }
+
+    private void moveToNextRow() {
+        if (currentRow < MAX_TRIES) {
+            currentRow++;
+            currentCol = 0;
             gridCells[currentRow][currentCol].setEditable(true);
             gridCells[currentRow][currentCol].requestFocus();
         }
