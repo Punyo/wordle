@@ -4,6 +4,7 @@ import com.ibm.icu.text.Transliterator;
 
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
+import com.programming.advanced.wordle.util.Latin2Hira;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -32,7 +33,7 @@ public class GameController {
     private int currentCol = 0;
 
     // ローマ字からひらがなに変換するやつ
-    private Transliterator transliterator = Transliterator.getInstance("Latin-Hiragana");
+    private Latin2Hira latin2Hira = new Latin2Hira();
 
     // 初期化
     @FXML
@@ -73,16 +74,28 @@ public class GameController {
 
         // ひらがなに変換する
         cell.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.matches("[aiueoAIUEO]")) {
-                String hiragana = transliterator.transliterate(newValue);
+            if (newValue.isEmpty()) {
+                return;
+            }
+            newValue.toLowerCase();
+            String hiragana = latin2Hira.latin2Hira(newValue);
+
+            if (hiragana.isEmpty()) {
+                cell.setText(newValue);
+                return;
+            }
+            
+            if (hiragana.length() == 1) {
                 cell.setText(hiragana);
                 moveToNextCell();
-            } else if (newValue.length() == 2) {
-                String hiragana = transliterator.transliterate(newValue);
-                if (hiragana.length() > 1) {
-                    hiragana = hiragana.substring(0, 1);
+                return;
+            }
+
+            if (currentCol + hiragana.length() < WORD_LENGTH) {
+                for (int i = 0; i < hiragana.length(); i++) {
+                    gridCells[currentRow][currentCol + i].setText(String.valueOf(hiragana.charAt(i)));
                 }
-                cell.setText(hiragana);
+                currentCol += hiragana.length() - 1;
                 moveToNextCell();
             }
         });
