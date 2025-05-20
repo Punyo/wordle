@@ -12,20 +12,30 @@
     xmlns="http://javafx.com/javafx/8.0.171"
     xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.programming.advanced.wordle.controller.RecordController">
     <tabs>
-        <Tab text="あそんだ履歴">
+        <Tab text="あそんだ記録">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <ListView fx:id="listView" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                        <TableView fx:id="playTableView" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
+                            <columns>
+                                <TableColumn fx:id="dateColumn" text="日付" />
+                                <TableColumn fx:id="answerColumn" text="答えの単語" />
+                                <TableColumn fx:id="tryCountColumn" text="解答回数" />
+                                <TableColumn fx:id="isClearColumn" text="結果" />
+                            </columns>
+                        </TableView>
                     </children>
                 </AnchorPane>
             </content>
         </Tab>
-        <Tab text="単語の記録">
+        <!-- <Tab text="単語の記録">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <TableView fx:id="tableView" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                        <TableView fx:id="wordTableView" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                             <columnResizePolicy>
                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                             </columnResizePolicy>
@@ -39,6 +49,6 @@
                     </children>
                 </AnchorPane>
             </content>
-        </Tab>
+        </Tab> -->
     </tabs>
 </TabPane>

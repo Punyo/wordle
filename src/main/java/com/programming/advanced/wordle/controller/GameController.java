@@ -77,19 +77,20 @@ public class GameController {
             if (newValue.isEmpty()) {
                 return;
             }
-
+            // ひらがなに変換
             String hiragana = latin2Hira.latin2Hira(newValue.toLowerCase());
-
+            // 変換できない場合はそのまま表示
             if (hiragana.isEmpty()) {
                 cell.setText(newValue);
                 return;
             }
-            
+            // 変換後が1文字の場合
             if (hiragana.length() == 1) {
                 cell.setText(hiragana);
                 moveToNextCell();
                 return;
             }
+            // 変換後が2文字以外の場合
             if (currentCol + hiragana.length() <= WORD_LENGTH) {
                 for (int i = 0; i < hiragana.length(); i++) {
                     gridCells[currentRow][currentCol + i].setText(String.valueOf(hiragana.charAt(i)));
