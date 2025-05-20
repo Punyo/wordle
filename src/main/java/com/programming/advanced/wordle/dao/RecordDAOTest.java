@@ -1,8 +1,10 @@
 package com.programming.advanced.wordle.dao;
 
+import com.programming.advanced.wordle.model.Record;
 import com.programming.advanced.wordle.model.RecordDTO;
 import com.programming.advanced.wordle.model.Word;
 import java.sql.*;
+import java.util.List;
 
 public class RecordDAOTest {
     public static void main(String[] args) {
@@ -48,6 +50,18 @@ public class RecordDAOTest {
             word = wordDAO.getWordById(wordId);
             System.out.printf("\n更新後の統計: プレイ回数=%d, 正解回数=%d, 失敗回数=%d%n",
                 word.getPlayCount(), word.getClearCount(), word.getMissCount());
+            
+            // 全レコード取得のテスト
+            System.out.println("\n全レコード取得のテストを開始します...");
+            List<Record> records = recordDAO.getAllRecords();
+            System.out.printf("取得したレコード数: %d%n", records.size());
+            
+            System.out.println("\nレコード一覧:");
+            for (Record r : records) {
+                System.out.printf("ID: %d, 単語: %s, 回答回数: %d, クリア: %s, 日付: %s%n",
+                    r.getId(), r.getWord(), r.getAnswerCount(),
+                    r.isClear() ? "成功" : "失敗", r.getDate());
+            }
             
             System.out.println("\nテストが正常に完了しました。");
             

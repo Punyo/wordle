@@ -4,6 +4,8 @@ import com.programming.advanced.wordle.model.Record;
 import com.programming.advanced.wordle.model.RecordDTO;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 // 記録データアクセスオブジェクト
 public class RecordDAO {
@@ -65,5 +67,36 @@ public class RecordDAO {
                 conn.setAutoCommit(true); // 自動コミットを元に戻す
             }
         }
+    }
+
+    /**
+     * すべての記録を取得します
+     * @return 記録のリスト
+     * @throws SQLException データベースアクセスエラーが発生した場合
+     */
+    public List<Record> getAllRecords() throws SQLException {
+        String sql = "SELECT r.*, w.word FROM records r " +
+                    "JOIN words w ON r.wordId = w.id " +
+                    "ORDER BY r.date DESC, r.id DESC";
+        
+        List<Record> records = new ArrayList<>();
+        
+        try (Connection conn = DatabaseInitializer.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while (rs.next()) {
+                Record record = new Record();
+                record.setId(rs.getInt("id"));
+                record.setWordId(rs.getInt("wordId"));
+                record.setWord(rs.getString("word"));
+                record.setAnswerCount(rs.getInt("answerCount"));
+                record.setClear(rs.getBoolean("clear"));
+                record.setDate(rs.getDate("date").toLocalDate());
+                records.add(record);
+            }
+        }
+        
+        return records;
     }
 }
