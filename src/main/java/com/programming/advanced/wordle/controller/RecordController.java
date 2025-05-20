@@ -71,6 +71,7 @@ public class RecordController {
         playTableView.setItems(playRecords);
 
         // テーブルの列の幅を自動で調整
+        playTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);   
         playTableView.setTableMenuButtonVisible(false);
 
         // テーブルの列の並び替えを無効化
