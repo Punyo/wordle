@@ -1,6 +1,9 @@
 package com.programming.advanced.wordle.service;
 
-import com.programming.advanced.wordle.model.Word;
+
+import com.programming.advanced.wordle.dao.WordDAO;
+
+import java.sql.SQLException;
 
 // ゲームサービス
 public class GameService {
@@ -10,6 +13,8 @@ public class GameService {
     private int wordLength; // 単語の長さ
 
     private boolean isInitialized = false;
+
+    private final WordDAO WORD_DAO = new WordDAO();
 
     private static final GameService instance = new GameService();
 
@@ -24,6 +29,13 @@ public class GameService {
     }
 
     public WordBoxStatus[] checkWord(String inputWord) {
+        try {
+            if (WORD_DAO.getWordIdByWord(inputWord) == -1) {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Database error occurred while checking the word.", e);
+        }
         if (!isInitialized) {
             throw new IllegalStateException("Game not initialized.");
         }
