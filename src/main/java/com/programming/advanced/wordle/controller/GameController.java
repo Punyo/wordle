@@ -217,15 +217,9 @@ public class GameController {
             cells[i].getStyleClass().removeAll("correct-letter", "present-letter", "absent-letter");
 
             switch (status[i]) {
-                case CORRECT:
-                    cells[i].getStyleClass().add("correct-letter");
-                    break;
-                case IN_WORD:
-                    cells[i].getStyleClass().add("present-letter");
-                    break;
-                case NOT_IN_WORD:
-                    cells[i].getStyleClass().add("absent-letter");
-                    break;
+                case CORRECT -> cells[i].getStyleClass().add("correct-letter");
+                case IN_WORD -> cells[i].getStyleClass().add("present-letter");
+                case NOT_IN_WORD -> cells[i].getStyleClass().add("absent-letter");
             }
         }
     }
