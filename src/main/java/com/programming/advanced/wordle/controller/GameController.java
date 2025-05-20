@@ -116,6 +116,7 @@ public class GameController {
     private void setupKeyboard() {
         String[] rows = {
                 "わらやまはなたさかあ",
+                "をり みひにちしきい",
                 "んるゆむふぬつすくう",
                 " れ めへねてせけえ",
                 "ーろよもほのとそこお"
