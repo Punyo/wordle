@@ -77,8 +77,8 @@ public class GameController {
             if (newValue.isEmpty()) {
                 return;
             }
-            newValue.toLowerCase();
-            String hiragana = latin2Hira.latin2Hira(newValue);
+
+            String hiragana = latin2Hira.latin2Hira(newValue.toLowerCase());
 
             if (hiragana.isEmpty()) {
                 cell.setText(newValue);
@@ -90,8 +90,7 @@ public class GameController {
                 moveToNextCell();
                 return;
             }
-
-            if (currentCol + hiragana.length() < WORD_LENGTH) {
+            if (currentCol + hiragana.length() <= WORD_LENGTH) {
                 for (int i = 0; i < hiragana.length(); i++) {
                     gridCells[currentRow][currentCol + i].setText(String.valueOf(hiragana.charAt(i)));
                 }

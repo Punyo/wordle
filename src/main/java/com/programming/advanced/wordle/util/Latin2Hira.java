@@ -120,7 +120,7 @@ public class Latin2Hira {
         m.put("ju", "しゆ");
         m.put("jo", "しよ");
         m.put("jya", "しや");
-        m.put("jyu", "しゅ");
+        m.put("jyu", "しゆ");
         m.put("jyo", "しよ");
         m.put("bya", "ひや");
         m.put("byu", "ひゆ");
