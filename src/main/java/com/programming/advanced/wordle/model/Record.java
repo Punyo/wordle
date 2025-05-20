@@ -6,6 +6,7 @@ import java.time.LocalDate;
 public class Record {
     private int id; // レコードID
     private int wordId; // 出題語のID
+    private String word;        // 単語の文字列
     private int answerCount; // 回答回数（最大6）
     private boolean clear; // 正解したか否か
     private LocalDate date; // プレイ日付
@@ -13,9 +14,10 @@ public class Record {
     public Record() {
     }
 
-    public Record(int id, int wordId, int answerCount, boolean clear, LocalDate date) {
+    public Record(int id, int wordId, String word, int answerCount, boolean clear, LocalDate date) {
         this.id = id;
         this.wordId = wordId;
+        this.word = word;
         this.answerCount = answerCount;
         this.clear = clear;
         this.date = date;
@@ -35,6 +37,14 @@ public class Record {
 
     public void setWordId(int wordId) {
         this.wordId = wordId;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
     }
 
     public int getAnswerCount() {
