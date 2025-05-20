@@ -1,10 +1,19 @@
 package com.programming.advanced.wordle.dao;
 
 import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
 
 // データベースの初期化を行うクラス
 public class DatabaseInitializer {
     private static final String DB_URL = "jdbc:sqlite:wordle.db";
+    
+    // 初期データとして使用する単語リスト
+    private static final List<String> INITIAL_WORDS = Arrays.asList(
+        "ぷろぐらま", "はなみずき", "こんぱいら", "くりすます", "なまびーる", 
+        "おとしだま", "ふきのとう", "まんじゅう", "こかんせつ", "かれんだー", 
+        "とりきぞく", "おほしさま", "ちゃーはん", "れもねーど", "かめらまん"
+    );
     
     // データベースを初期化する
     public static void initializeDatabase() {
@@ -53,12 +62,37 @@ public class DatabaseInitializer {
                     ")";
                 stmt.execute(createInputsTable);
                 
+                // 初期データの追加
+                insertInitialWords(conn);
+                
                 System.out.println("データベースの初期化が完了しました");
             }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("SQLite JDBCドライバが見つかりません", e);
         } catch (SQLException e) {
             throw new RuntimeException("データベースの初期化に失敗しました", e);
+        }
+    }
+    
+    // 初期データとして単語を追加する
+    private static void insertInitialWords(Connection conn) throws SQLException {
+        // 既存のデータを確認
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM words")) {
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.out.println("既に単語データが存在するため、初期データの追加をスキップします");
+                return;
+            }
+        }
+        
+        // 単語の追加
+        String insertSql = "INSERT INTO words (word) VALUES (?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
+            for (String word : INITIAL_WORDS) {
+                pstmt.setString(1, word);
+                pstmt.executeUpdate();
+            }
+            System.out.println(INITIAL_WORDS.size() + "個の単語を追加しました");
         }
     }
     
