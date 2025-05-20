@@ -44,6 +44,8 @@
                         <arg>--add-modules</arg>
                         <arg>java.sql</arg>
                     </compilerArgs>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>
