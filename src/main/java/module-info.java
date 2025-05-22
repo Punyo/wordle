@@ -1,7 +1,6 @@
 module com.programming.advanced.wordle {
     requires javafx.controls;
     requires javafx.fxml;
-    requires com.ibm.icu;
     requires java.sql;
 
     opens com.programming.advanced.wordle to javafx.fxml;
