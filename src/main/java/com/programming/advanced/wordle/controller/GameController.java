@@ -155,10 +155,12 @@ public class GameController extends BaseController {
                 handleBackspace();
             } else if (text.equals("enter") && currentTryInput.length() == WORD_LENGTH) {
                 WordBoxStatus[] status = gameService.checkWord(currentTryInput);
-                updateCurrentRowCellsColor(status);
-                updateKeyboardColor(status);
-                moveToNextRow();
-                currentTryInput = "";
+                if (status != null) {
+                    updateCurrentRowCellsColor(status);
+                    updateKeyboardColor(status);
+                    moveToNextRow();
+                    currentTryInput = "";
+                }
             }
         });
         return button;
