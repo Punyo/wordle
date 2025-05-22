@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 
 // Game画面のコントローラー
-public class GameController {
+public class GameController extends BaseController {
     // ゲーム画面のUI制御
     @FXML
     private GridPane wordgrid;

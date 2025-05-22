@@ -1,31 +1,20 @@
 package com.programming.advanced.wordle.controller;
 
-import com.programming.advanced.wordle.model.Record;
-import com.programming.advanced.wordle.MainApp;
+import java.time.LocalDate;
+import java.util.List;
+
 import com.programming.advanced.wordle.dao.RecordDAO;
+import com.programming.advanced.wordle.model.Record;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import java.util.List;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
-public class RecordController {
-    @FXML
-    private Button backButton; // 戻るボタン
-    @FXML
-    private void onBackButtonClicked(ActionEvent e) throws IOException {
-        MainApp.setRoot("menu");
-    }
-
+public class RecordController extends BaseController {
     @FXML
     private TableView<Record> playTableView;
     @FXML
