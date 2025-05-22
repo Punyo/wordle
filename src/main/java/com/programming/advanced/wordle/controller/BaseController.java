@@ -10,9 +10,9 @@ import javafx.scene.control.Button;
 
 public class BaseController {
     @FXML
-    private Button backButton; // 戻るボタン
+    private Button returnToMenuButton; // 戻るボタン
     @FXML
-    private void onBackButtonClicked(ActionEvent e) throws IOException {
+    private void handleReturnToMenuButton(ActionEvent e) throws IOException {
         MainApp.setRoot("menu");
     }
 }

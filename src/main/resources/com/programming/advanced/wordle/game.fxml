@@ -10,7 +10,7 @@
 <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="720.0" spacing="16.0" stylesheets="@css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.programming.advanced.wordle.controller.GameController">
    <ToolBar prefHeight="40.0" prefWidth="200.0">
      <items>
-       <Button fx:id="backButton" mnemonicParsing="false" onAction="#onBackButtonClicked" text="←戻る" />
+       <Button fx:id="returnToMenuButton" mnemonicParsing="false" onAction="#handleReturnToMenuButton" text="←戻る" />
      </items>
    </ToolBar>
 
