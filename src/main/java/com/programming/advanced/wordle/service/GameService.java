@@ -28,14 +28,14 @@ public class GameService {
         this.isInitialized = true;
     }
 
+    public void resetGame() {
+        this.currentWord = null;
+        this.remainingAttempts = 0;
+        this.wordLength = 0;
+        this.isInitialized = false;
+    }
+
     public WordBoxStatus[] checkWord(String inputWord) {
-        try {
-            if (WORD_DAO.getWordIdByWord(inputWord) == -1) {
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Database error occurred while checking the word.", e);
-        }
         if (!isInitialized) {
             throw new IllegalStateException("Game not initialized.");
         }
@@ -45,6 +45,13 @@ public class GameService {
         }
         if (remainingAttempts <= 0) {
             throw new IllegalStateException("No remaining attempts.");
+        }
+        try {
+            if (WORD_DAO.getWordIdByWord(inputWord) == -1) {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Database error occurred while checking the word.", e);
         }
         for (int i = 0; i < wordLength; i++) {
             if (inputWord.charAt(i) == currentWord.charAt(i)) {
