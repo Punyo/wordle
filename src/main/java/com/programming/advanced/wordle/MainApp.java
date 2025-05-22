@@ -8,13 +8,15 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import com.programming.advanced.wordle.dao.DatabaseInitializer;
+
 /**
  * JavaFX App
  */
 public class MainApp extends Application {
 
     private static Scene scene;
-
+    
     @Override
     public void start(Stage stage) throws IOException {
         System.setProperty("prism.lcdtext", "false");
@@ -36,6 +38,11 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
+        try {
+            DatabaseInitializer.initializeDatabase();
+        } catch (Exception e) {
+            System.err.println("データベースの初期化に失敗しました。");
+        }
         launch();
     }
 

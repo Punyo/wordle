@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 public class Latin2Hira {
     HashMap<String, String> m = new HashMap<String, String>();
+
     public Latin2Hira() {
         m.put("a", "あ");
         m.put("i", "い");
@@ -120,7 +121,7 @@ public class Latin2Hira {
         m.put("ju", "しゆ");
         m.put("jo", "しよ");
         m.put("jya", "しや");
-        m.put("jyu", "しゅ");
+        m.put("jyu", "しゆ");
         m.put("jyo", "しよ");
         m.put("bya", "ひや");
         m.put("byu", "ひゆ");
@@ -134,16 +135,16 @@ public class Latin2Hira {
 
     public String latin2Hira(String s) {
         StringBuilder result = new StringBuilder();
-        
+
         // 入力を小文字にへんかん
         s = s.toLowerCase();
 
-        for(int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             // 小さい「つ」のチェック
             if (i + 2 < s.length() && isConsonant(s.charAt(i)) && s.charAt(i) == s.charAt(i + 1)) {
                 result.append("つ");
                 i++; // 次の文字（同じ子音）をスキップ
-                String remaining = s.substring(i+1, i+2);
+                String remaining = s.substring(i + 1, i + 2);
                 if (m.containsKey(s.charAt(i) + remaining)) {
                     result.append(m.get(s.charAt(i) + remaining));
                     i++;
@@ -153,17 +154,17 @@ public class Latin2Hira {
 
             // 3文字の場合
             if (i + 2 < s.length()) {
-                String word = s.substring(i, i+3);
+                String word = s.substring(i, i + 3);
                 if (m.containsKey(word)) {
                     result.append(m.get(word));
-                    i+=2;
+                    i += 2;
                     continue;
                 }
             }
 
             // 2文字の場合
             if (i + 1 < s.length()) {
-                String word = s.substring(i, i+2);
+                String word = s.substring(i, i + 2);
                 if (m.containsKey(word)) {
                     result.append(m.get(word));
                     i += 1;
