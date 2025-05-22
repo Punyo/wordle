@@ -1,62 +1,72 @@
 package com.programming.advanced.wordle.controller;
 
-import com.programming.advanced.wordle.model.Word;
+import java.time.LocalDate;
+import java.util.List;
+
+import com.programming.advanced.wordle.dao.RecordDAO;
+import com.programming.advanced.wordle.model.Record;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.ListView;
 
-public class RecordController {
+public class RecordController extends BaseController {
     @FXML
-    private ListView<String> listView;
+    private TableView<Record> playTableView;
     @FXML
-    private TableView<Word> tableView;
+    private TableColumn<Record, LocalDate> dateColumn; // 日付
     @FXML
-    private TableColumn<Word, Integer> rankColumn; // 順位
+    private TableColumn<Record, String> answerColumn; // 解答
     @FXML
-    private TableColumn<Word, String> nameColumn; // 単語
+    private TableColumn<Record, Integer> tryCountColumn; // 試行回数
     @FXML
-    private TableColumn<Word, Integer> countColumn; // 出題された階数
-    @FXML
-    private TableColumn<Word, Double> successRateColumn; // 成功率
+    private TableColumn<Record, Boolean> isClearColumn; // クリアフラグ
 
     @FXML
     public void initialize() {
-        // ListViewの初期化
-        listView.setEditable(false);
-        listView.setFocusTraversable(false);
-        listView.setMouseTransparent(true);
+        // playTableViewの初期化
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        answerColumn.setCellValueFactory(new PropertyValueFactory<>("word"));
+        tryCountColumn.setCellValueFactory(new PropertyValueFactory<>("answerCount"));
+        isClearColumn.setCellValueFactory(new PropertyValueFactory<>("clear"));
+        
+        // クリア状態の表示設定
+        isClearColumn.setCellFactory(column -> new TableCell<Record, Boolean>() {
+            @Override
+            protected void updateItem(Boolean isClear, boolean empty) {
+                super.updateItem(isClear, empty);
+                if (empty || isClear == null) {
+                    setText(null);
+                } else {
+                    setText(isClear ? "クリア" : "失敗");
+                }
+            }
+        });
 
-        // サンプルデータ
-        ObservableList<String> playRecords = FXCollections.observableArrayList(
-                "Single", "Double", "inukaki", "tamago", "egg");
-        listView.setItems(playRecords);
+        // テーブルの設定
+        playTableView.setEditable(false);
+        playTableView.setFocusTraversable(false);
 
-        // TableViewの初期化
-        rankColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("word"));
-        countColumn.setCellValueFactory(new PropertyValueFactory<>("playCount"));
-        successRateColumn.setCellValueFactory(new PropertyValueFactory<>("clearCount")); // TODO: 成功率を計算する
+        // データの取得と設定
+        try {
+            RecordDAO recordDAO = new RecordDAO();
+            List<Record> records = recordDAO.getAllRecords();
+            ObservableList<Record> playRecords = FXCollections.observableArrayList(records);
+            playTableView.setItems(playRecords);
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
 
-        tableView.setEditable(false);
-        tableView.setFocusTraversable(false);
+        // テーブルの表示設定
+        playTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        playTableView.setTableMenuButtonVisible(false);
 
-        // サンプルデータ
-        ObservableList<Word> words = FXCollections.observableArrayList(
-                new Word(1, "apple", 10, 5, 5),
-                new Word(2, "house", 8, 6, 4),
-                new Word(3, "phone", 15, 12, 8));
-        tableView.setItems(words);
-
-        // テーブルの列の幅を自動で調整
-        tableView.setTableMenuButtonVisible(false);
-
-        // テーブルの列の並び替えを無効化
-        for (TableColumn<?, ?> col : tableView.getColumns()) {
+        // カラムの設定
+        for (TableColumn<?, ?> col : playTableView.getColumns()) {
             col.setSortable(true);
             col.setReorderable(false);
         }

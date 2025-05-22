@@ -1,9 +1,9 @@
 package com.programming.advanced.wordle.controller;
 
-
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 
 // Game画面のコントローラー
-public class GameController {
+public class GameController extends BaseController {
     // ゲーム画面のUI制御
     @FXML
     private GridPane wordgrid;
@@ -76,21 +76,21 @@ public class GameController {
             if (newValue.isEmpty()) {
                 return;
             }
-            newValue.toLowerCase();
-            String hiragana = latin2Hira.latin2Hira(newValue);
-
+            // ひらがなに変換
+            String hiragana = latin2Hira.latin2Hira(newValue.toLowerCase());
+            // 変換できない場合はそのまま表示
             if (hiragana.isEmpty()) {
                 cell.setText(newValue);
                 return;
             }
-
+            // 変換後が1文字の場合
             if (hiragana.length() == 1) {
                 cell.setText(hiragana);
                 moveToNextCell();
                 return;
             }
-
-            if (currentCol + hiragana.length() < WORD_LENGTH) {
+            // 変換後が2文字以外の場合
+            if (currentCol + hiragana.length() <= WORD_LENGTH) {
                 for (int i = 0; i < hiragana.length(); i++) {
                     gridCells[currentRow][currentCol + i].setText(String.valueOf(hiragana.charAt(i)));
                 }
@@ -156,6 +156,7 @@ public class GameController {
             } else if (text.equals("enter") && currentTryInput.length() == WORD_LENGTH) {
                 WordBoxStatus[] status = gameService.checkWord(currentTryInput);
                 updateCurrentRowCellsColor(status);
+                updateKeyboardColor(status);
                 moveToNextRow();
                 currentTryInput = "";
             }
@@ -221,6 +222,26 @@ public class GameController {
                 case NOT_IN_WORD -> cells[i].getStyleClass().add("absent-letter");
             }
         }
+    }
+
+    public void updateKeyboardColor(WordBoxStatus[] status) {
+        var keys = keyboard.getChildren();
+        for (int i = 0; i < WORD_LENGTH; i++) {
+            char currentChar = currentTryInput.charAt(i);
+            for (var node : keys) {
+                if (node instanceof Button button) {
+                    if (button.getText().equals(String.valueOf(currentChar))) {
+                        button.getStyleClass().removeAll("correct-letter", "present-letter", "absent-letter");
+                        switch (status[i]) {
+                            case CORRECT -> button.getStyleClass().add("correct-letter");
+                            case IN_WORD -> button.getStyleClass().add("present-letter");
+                            case NOT_IN_WORD -> button.getStyleClass().add("absent-letter");
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     // 文字キーの入力処理
