@@ -1,19 +1,15 @@
 package com.programming.advanced.wordle.dao;
 
 import java.sql.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 // データベースの初期化を行うクラス
 public class DatabaseInitializer {
     private static final String DB_URL = "jdbc:sqlite:wordle.db";
-    
-    // 初期データとして使用する単語リスト
-    private static final List<String> INITIAL_WORDS = Arrays.asList(
-        "ぷろぐらま", "はなみずき", "こんぱいら", "くりすます", "なまびーる", 
-        "おとしだま", "ふきのとう", "まんじゅう", "こかんせつ", "かれんだー", 
-        "とりきぞく", "おほしさま", "ちゃーはん", "れもねーど", "かめらまん"
-    );
     
     // データベースを初期化する
     public static void initializeDatabase() {
@@ -85,14 +81,30 @@ public class DatabaseInitializer {
             }
         }
         
+        // words.txtから単語を読み込む
+        List<String> words = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(
+                    DatabaseInitializer.class.getResourceAsStream("/words.txt"), "UTF-8"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.length() == 5) {
+                    words.add(line);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("words.txtの読み込みに失敗しました", e);
+        }
+        
         // 単語の追加
         String insertSql = "INSERT INTO words (word) VALUES (?)";
         try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-            for (String word : INITIAL_WORDS) {
+            for (String word : words) {
                 pstmt.setString(1, word);
                 pstmt.executeUpdate();
             }
-            System.out.println(INITIAL_WORDS.size() + "個の単語を追加しました");
+            System.out.println(words.size() + "個の単語を追加しました");
         }
     }
     
