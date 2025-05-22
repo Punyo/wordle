@@ -8,7 +8,8 @@ public class GameServiceNotInitializedTest {
     @Test
     void testCheckWordNotInitialized() {
         GameService gameService = GameService.getInstance();
-        String inputWord = "あいうえお";
+        gameService.resetGame();
+        String inputWord = "おほしさま";
         assertThrows(IllegalStateException.class, () -> gameService.checkWord(inputWord));
     }
 }
