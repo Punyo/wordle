@@ -1,18 +1,14 @@
 package com.programming.advanced.wordle.controller;
 
-import com.ibm.icu.text.Transliterator;
-
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
 
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import javafx.scene.Node;
 
 // Game画面のコントローラー
 public class GameController {
