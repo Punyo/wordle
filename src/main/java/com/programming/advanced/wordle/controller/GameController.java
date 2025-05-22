@@ -5,11 +5,14 @@ import com.ibm.icu.text.Transliterator;
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
+
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.Node;
 
 // Game画面のコントローラー
 public class GameController {
@@ -157,6 +160,7 @@ public class GameController {
             } else if (text.equals("enter") && currentTryInput.length() == WORD_LENGTH) {
                 WordBoxStatus[] status = gameService.checkWord(currentTryInput);
                 updateCurrentRowCellsColor(status);
+                updateKeyboardColor(status);
                 moveToNextRow();
                 currentTryInput = "";
             }
@@ -222,6 +226,26 @@ public class GameController {
                 case NOT_IN_WORD -> cells[i].getStyleClass().add("absent-letter");
             }
         }
+    }
+
+    public void updateKeyboardColor(WordBoxStatus[] status) {
+        var keys = keyboard.getChildren();
+        for (int i = 0; i < WORD_LENGTH; i++) {
+            char currentChar = currentTryInput.charAt(i);
+            for (var node : keys) {
+                if (node instanceof Button button) {
+                    if (button.getText().equals(String.valueOf(currentChar))) {
+                        button.getStyleClass().removeAll("correct-letter", "present-letter", "absent-letter");
+                        switch (status[i]) {
+                            case CORRECT -> button.getStyleClass().add("correct-letter");
+                            case IN_WORD -> button.getStyleClass().add("present-letter");
+                            case NOT_IN_WORD -> button.getStyleClass().add("absent-letter");
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     // 文字キーの入力処理
