@@ -1,2 +1,5 @@
 target/
 wordle.db
+
+report/*
+!report/report.tex
