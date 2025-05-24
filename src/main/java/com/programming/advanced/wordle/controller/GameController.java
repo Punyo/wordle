@@ -2,15 +2,19 @@ package com.programming.advanced.wordle.controller;
 
 import java.io.IOException;
 
+import com.programming.advanced.wordle.MainApp;
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 
 // Game画面のコントローラー
 public class GameController extends BaseController {
@@ -39,7 +43,7 @@ public class GameController extends BaseController {
     // 初期化
     @FXML
     public void initialize() {
-        String word = "あいうえお"; // TODO: 単語を取得する
+        String word = ""; // TODO: 単語を取得する
         gridCells = new TextField[MAX_TRIES][WORD_LENGTH];
         gameService.startNewGame(word, MAX_TRIES, WORD_LENGTH);
         setupWordGrid();
@@ -259,7 +263,21 @@ public class GameController extends BaseController {
     }
 
     // ゲームクリアのダイアログ
-    private void showGameClearDialog() throws IOException{
+    private void showGameDialog() throws IOException{
+    	try {	
+			FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("gameDialog.fxml"));
+			loader.load();
+			Parent root = loader.getRoot();
+			GameDialogController controller = loader.getController();
+			controller.initializeDialog(true, gameService.getRemainingAttempts());
+			
+			Stage dialog = new Stage();
+		    dialog.showAndWait();
+		
+    	} catch (IOException e) {
+			e.printStackTrace();
+    	}
+		
 		
 	}
 }
