@@ -70,7 +70,7 @@ public class WordDAO {
      * @throws SQLException データベースアクセスエラーが発生した場合
      */
     public int getWordIdByWord(String word) throws SQLException {
-        String sql = "SELECT id FROM words WHERE word = ?";
+        String sql = "SELECT id FROM words WHERE word_normalized = ?";
         
         try (Connection conn = DatabaseInitializer.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
