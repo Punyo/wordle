@@ -2,9 +2,11 @@ package com.programming.advanced.wordle.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.programming.advanced.wordle.MainApp;
 import com.programming.advanced.wordle.dao.WordDAO;
+import com.programming.advanced.wordle.model.Word;
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
@@ -95,20 +97,14 @@ public class GameController extends BaseController {
                 cell.setText(newValue);
                 return;
             }
-            // 変換後が1文字の場合
-            if (hiragana.length() == 1) {
-                cell.setText(hiragana);
-                moveToNextCell();
-                return;
-            }
+            // // 変換後が1文字の場合
+            // if (hiragana.length() == 1) {
+            // cell.setText(hiragana);
+            // moveToNextCell();
+            // return;
+            // }
             // 変換後が2文字以外の場合
-            if (currentCol + hiragana.length() <= WORD_LENGTH) {
-                for (int i = 0; i < hiragana.length(); i++) {
-                    gridCells[currentRow][currentCol + i].setText(String.valueOf(hiragana.charAt(i)));
-                }
-                currentCol += hiragana.length() - 1;
-                moveToNextCell();
-            }
+            enterInput(hiragana);
         });
 
         cell.setOnKeyReleased(e -> {
@@ -122,6 +118,19 @@ public class GameController extends BaseController {
         });
 
         return cell;
+    }
+
+    private void enterInput(String hiragana) {
+        if (currentCol + hiragana.length() <= WORD_LENGTH) {
+            StringBuilder currentTryInputBuilder = new StringBuilder(currentTryInput);
+            for (int i = 0; i < hiragana.length(); i++) {
+                gridCells[currentRow][currentCol + i].setText(String.valueOf(hiragana.charAt(i)));
+                currentTryInputBuilder.append(hiragana.charAt(i));
+            }
+            currentTryInput = currentTryInputBuilder.toString();
+            currentCol += hiragana.length() - 1;
+            moveToNextCell();
+        }
     }
 
     private void setupKeyboard() {
@@ -166,16 +175,42 @@ public class GameController extends BaseController {
             if (text.equals("backspace")) {
                 handleBackspace();
             } else if (text.equals("enter") && currentTryInput.length() == WORD_LENGTH) {
-                WordBoxStatus[] status = GAME_SERVICE.checkWord(currentTryInput);
-                if (status != null) {
-                    updateCurrentRowCellsColor(status);
-                    updateKeyboardColor(status);
-                    moveToNextRow();
-                    currentTryInput = "";
-                }
+                handleEnter();
             }
         });
         return button;
+    }
+
+    private void handleEnter() {
+        WordBoxStatus[] status = GAME_SERVICE.checkWord(currentTryInput);
+        if (status != null) {
+            boolean isClear = true;
+            for (WordBoxStatus s : status) {
+                if (s != WordBoxStatus.CORRECT) {
+                    isClear = false;
+                }
+            }
+            if (isClear) {
+                try {
+                    showGameDialog(true);
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (GAME_SERVICE.getRemainingAttempts() == 0) {
+                try {
+                    showGameDialog(false);
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            updateCurrentRowCellsColor(status);
+            updateKeyboardColor(status);
+            moveToNextRow();
+            currentTryInput = "";
+        }
+
     }
 
     // 文字キーの作成
@@ -221,6 +256,9 @@ public class GameController extends BaseController {
                 currentCell.setText("");
                 currentCell.setEditable(true);
                 currentCell.requestFocus();
+            }
+            if (!currentTryInput.isEmpty()) {
+                currentTryInput = currentTryInput.substring(0, currentTryInput.length() - 1);
             }
         }
     }
@@ -268,7 +306,6 @@ public class GameController extends BaseController {
         }
     }
 
-    // ゲームクリアのダイアログ
     private void showGameDialog(boolean isClear) throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("gameDialog.fxml"));
