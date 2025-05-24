@@ -10,10 +10,12 @@ import com.programming.advanced.wordle.util.Latin2Hira;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 // Game画面のコントローラー
@@ -263,21 +265,21 @@ public class GameController extends BaseController {
     }
 
     // ゲームクリアのダイアログ
-    private void showGameDialog() throws IOException{
+    private void showGameDialog(boolean isClear) throws IOException{
     	try {	
 			FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("gameDialog.fxml"));
-			loader.load();
-			Parent root = loader.getRoot();
+			Parent root = loader.load();
 			GameDialogController controller = loader.getController();
-			controller.initializeDialog(true, gameService.getRemainingAttempts());
+			controller.initializeDialog(isClear, gameService.getRemainingAttempts());
 			
 			Stage dialog = new Stage();
+			dialog.initModality(Modality.APPLICATION_MODAL);
+			dialog.setScene(new Scene(root));
+			dialog.setResizable(false);
 		    dialog.showAndWait();
 		
     	} catch (IOException e) {
 			e.printStackTrace();
     	}
-		
-		
 	}
 }
