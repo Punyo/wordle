@@ -23,6 +23,7 @@ public class WordDAO {
                 return new Word(
                     rs.getInt("id"),
                     rs.getString("word"),
+                    rs.getString("word_normalized"),
                     rs.getInt("playCount"),
                     rs.getInt("clearCount"),
                     rs.getInt("missCount")
@@ -52,6 +53,7 @@ public class WordDAO {
                     return new Word(
                         rs.getInt("id"),
                         rs.getString("word"),
+                        rs.getString("word_normalized"),
                         rs.getInt("playCount"),
                         rs.getInt("clearCount"),
                         rs.getInt("missCount")
