@@ -2,12 +2,13 @@ package com.programming.advanced.wordle.service;
 
 
 import com.programming.advanced.wordle.dao.WordDAO;
+import com.programming.advanced.wordle.model.Word;
 
 import java.sql.SQLException;
 
 // ゲームサービス
 public class GameService {
-    private String currentWord;
+    private Word currentWord;
 
     private int remainingAttempts;
     private int wordLength; // 単語の長さ
@@ -21,7 +22,7 @@ public class GameService {
     private GameService() {
     }
 
-    public void startNewGame(String word, int attempts, int wordLength) {
+    public void startNewGame(Word word, int attempts, int wordLength) {
         this.currentWord = word;
         this.remainingAttempts = attempts; // 6回の試行
         this.wordLength = wordLength; // 単語の長さ
@@ -54,9 +55,9 @@ public class GameService {
             throw new RuntimeException("Database error occurred while checking the word.", e);
         }
         for (int i = 0; i < wordLength; i++) {
-            if (inputWord.charAt(i) == currentWord.charAt(i)) {
+            if (inputWord.charAt(i) == currentWord.getNormalizedWord().charAt(i)) {
                 status[i] = WordBoxStatus.CORRECT;
-            } else if (currentWord.contains(String.valueOf(inputWord.charAt(i)))) {
+            } else if (currentWord.getNormalizedWord().contains(String.valueOf(inputWord.charAt(i)))) {
                 status[i] = WordBoxStatus.IN_WORD;
             } else {
                 status[i] = WordBoxStatus.NOT_IN_WORD;
@@ -66,7 +67,7 @@ public class GameService {
         return status;
     }
 
-    public String getCurrentWord() {
+    public Word getCurrentWord() {
         return currentWord;
     }
 
