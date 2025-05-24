@@ -1,8 +1,10 @@
 package com.programming.advanced.wordle.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import com.programming.advanced.wordle.MainApp;
+import com.programming.advanced.wordle.dao.WordDAO;
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
@@ -30,7 +32,9 @@ public class GameController extends BaseController {
     private static final int WORD_LENGTH = 5; // 文字の長さ
     private static final int MAX_TRIES = 6; // 試行回数
 
-    private final GameService gameService = GameService.getInstance();
+    private final WordDAO WORD_DAO = new WordDAO();
+
+    private final GameService GAME_SERVICE = GameService.getInstance();
 
     private String currentTryInput = ""; // 現在の単語
 
@@ -44,10 +48,10 @@ public class GameController extends BaseController {
 
     // 初期化
     @FXML
-    public void initialize() {
-        String word = ""; // TODO: 単語を取得する
+    public void initialize() throws SQLException {
+        String word = WORD_DAO.getRandomWord().getWord();
         gridCells = new TextField[MAX_TRIES][WORD_LENGTH];
-        gameService.startNewGame(word, MAX_TRIES, WORD_LENGTH);
+        GAME_SERVICE.startNewGame(word, MAX_TRIES, WORD_LENGTH);
         setupWordGrid();
         setupKeyboard();
     }
@@ -162,7 +166,7 @@ public class GameController extends BaseController {
             if (text.equals("backspace")) {
                 handleBackspace();
             } else if (text.equals("enter") && currentTryInput.length() == WORD_LENGTH) {
-                WordBoxStatus[] status = gameService.checkWord(currentTryInput);
+                WordBoxStatus[] status = GAME_SERVICE.checkWord(currentTryInput);
                 if (status != null) {
                     updateCurrentRowCellsColor(status);
                     updateKeyboardColor(status);
@@ -265,21 +269,21 @@ public class GameController extends BaseController {
     }
 
     // ゲームクリアのダイアログ
-    private void showGameDialog(boolean isClear) throws IOException{
-    	try {	
-			FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("gameDialog.fxml"));
-			Parent root = loader.load();
-			GameDialogController controller = loader.getController();
-			controller.initializeDialog(isClear, gameService.getRemainingAttempts());
-			
-			Stage dialog = new Stage();
-			dialog.initModality(Modality.APPLICATION_MODAL);
-			dialog.setScene(new Scene(root));
-			dialog.setResizable(false);
-		    dialog.showAndWait();
-		
-    	} catch (IOException e) {
-			e.printStackTrace();
-    	}
-	}
+    private void showGameDialog(boolean isClear) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("gameDialog.fxml"));
+            Parent root = loader.load();
+            GameDialogController controller = loader.getController();
+            controller.initializeDialog(isClear, GAME_SERVICE.getRemainingAttempts());
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setScene(new Scene(root));
+            dialog.setResizable(false);
+            dialog.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
