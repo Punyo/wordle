@@ -2,11 +2,11 @@ package com.programming.advanced.wordle.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 import com.programming.advanced.wordle.MainApp;
+import com.programming.advanced.wordle.dao.RecordDAO;
 import com.programming.advanced.wordle.dao.WordDAO;
-import com.programming.advanced.wordle.model.Word;
+import com.programming.advanced.wordle.model.RecordDTO;
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
@@ -35,6 +35,7 @@ public class GameController extends BaseController {
     private static final int MAX_TRIES = 6; // 試行回数
 
     private final WordDAO WORD_DAO = new WordDAO();
+    private final RecordDAO RECORD_DAO = new RecordDAO();
 
     private final GameService GAME_SERVICE = GameService.getInstance();
 
@@ -311,14 +312,14 @@ public class GameController extends BaseController {
             Parent root = loader.load();
             GameDialogController controller = loader.getController();
             controller.initializeDialog(isClear, GAME_SERVICE.getRemainingAttempts());
-
+            RECORD_DAO.saveRecord(new RecordDTO(GAME_SERVICE.getCurrentWord().getId(), GAME_SERVICE.getRemainingAttempts(), isClear));
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
             dialog.setResizable(false);
             dialog.showAndWait();
 
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }
