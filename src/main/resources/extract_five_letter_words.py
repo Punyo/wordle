@@ -13,6 +13,22 @@ def katakana_to_hiragana(katakana_str):
             result.append(char)
     return ''.join(result)
 
+def normalize_word(word):
+    """小文字を大文字に変換して正規化する"""
+    result = []
+    for char in word:
+        if char == 'ぁ': result.append('あ')
+        elif char == 'ぃ': result.append('い')
+        elif char == 'ぅ': result.append('う')
+        elif char == 'ぇ': result.append('え')
+        elif char == 'ぉ': result.append('お')
+        elif char == 'っ': result.append('つ')
+        elif char == 'ゃ': result.append('や')
+        elif char == 'ゅ': result.append('ゆ')
+        elif char == 'ょ': result.append('よ')
+        else: result.append(char)
+    return ''.join(result)
+
 def has_diacritical_marks(text):
     # 濁点・半濁点を含む文字のUnicode範囲
     # カタカナの濁点・半濁点付き文字の範囲（伸ばし棒「ー」は除外）
@@ -23,6 +39,7 @@ def has_diacritical_marks(text):
 
 def extract_five_letter_words(input_csv, output_txt):
     five_letter_words = set()
+    normalized_words = set()  # 正規化された単語の重複チェック用
     
     with open(input_csv, 'r', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
@@ -37,7 +54,13 @@ def extract_five_letter_words(input_csv, output_txt):
                     not has_diacritical_marks(word)):
                     # カタカナをひらがなに変換
                     hiragana_word = katakana_to_hiragana(word)
-                    five_letter_words.add(hiragana_word)
+                    # 正規化した単語が重複していないかチェック
+                    normalized = normalize_word(hiragana_word)
+                    if normalized not in normalized_words:
+                        normalized_words.add(normalized)
+                        five_letter_words.add(hiragana_word)
+                    else:
+                        print(f"警告: 正規化後に重複する単語をスキップしました: {hiragana_word}")
     
     # 結果をテキストファイルに書き出し
     with open(output_txt, 'w', encoding='utf-8') as txtfile:
