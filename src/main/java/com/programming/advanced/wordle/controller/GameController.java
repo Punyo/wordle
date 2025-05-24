@@ -51,9 +51,8 @@ public class GameController extends BaseController {
     // 初期化
     @FXML
     public void initialize() throws SQLException {
-        String word = WORD_DAO.getRandomWord().getWord();
         gridCells = new TextField[MAX_TRIES][WORD_LENGTH];
-        GAME_SERVICE.startNewGame(word, MAX_TRIES, WORD_LENGTH);
+        GAME_SERVICE.startNewGame(WORD_DAO.getRandomWord(), MAX_TRIES, WORD_LENGTH);
         setupWordGrid();
         setupKeyboard();
     }
