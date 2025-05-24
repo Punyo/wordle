@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.programming.advanced.wordle.controller.GameDialogController">
+    <header>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0">
+         <children>
+            <Label fx:id="resultLabel" layoutX="132.0" layoutY="70.0" text="ゲームクリア">
+               <font>
+                  <Font name="Meiryo Bold" size="36.0" />
+               </font>
+            </Label>
+            <Label fx:id="answerLabel" layoutX="180.0" layoutY="168.0" prefHeight="17.0" prefWidth="120.0" text="答え：" />
+            <Label fx:id="tryCountLabel" layoutX="180.0" layoutY="150.0" prefWidth="120.0" text="試行回数：" />
+         </children></AnchorPane>
+    </header>
+    <content>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="49.0" prefWidth="480.0" spacing="100.0">
+               <children>
+                  <Button fx:id="playAgainButton" mnemonicParsing="false" onAction="#handlePlayAgainButton" text="もう一度プレイする" />
+                  <Button fx:id="returnToMenuButton" mnemonicParsing="false" onAction="#handleReturnToMenuButton" text="メニューに戻る" />
+               </children>
+            </HBox>
+         </children></AnchorPane>
+    </content>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</DialogPane>

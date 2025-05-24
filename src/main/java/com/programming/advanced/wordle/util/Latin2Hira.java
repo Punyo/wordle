@@ -98,9 +98,15 @@ public class Latin2Hira {
         m.put("sha", "しや");
         m.put("shu", "しゆ");
         m.put("sho", "しよ");
+        m.put("sya", "しや");
+        m.put("syu", "しゆ");
+        m.put("syo", "しよ");
         m.put("cha", "ちや");
         m.put("chu", "ちゆ");
         m.put("cho", "ちよ");
+        m.put("cya", "ちや");
+        m.put("cyu", "ちゆ");
+        m.put("cyo", "ちよ");
         m.put("nya", "にや");
         m.put("nyu", "にゆ");
         m.put("nyo", "によ");

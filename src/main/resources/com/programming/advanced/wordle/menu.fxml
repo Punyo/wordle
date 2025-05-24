@@ -14,19 +14,19 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label fx:id="title" text="WORDLE">
+    <Label text="WORDLE">
         <font>
             <Font name="System Bold" size="72.0" />
         </font>
     </Label>
 
-    <Button fx:id="playButon" prefWidth="200.0" text="PLAY" onAction="#onPlayButtonClicked">
+    <Button fx:id="playButon" prefWidth="200.0" text="PLAY" onAction="#handlePlayAction">
         <font>
             <Font size="24.0" />
         </font>
     </Button>
 
-    <Button fx:id="recordButton" prefWidth="200.0" text="RECORD" onAction="#onRecordButtonClicked">
+    <Button fx:id="recordButton" prefWidth="200.0" text="RECORD" onAction="#handleRecordAction">
         <font>
             <Font size="24.0" />
         </font>

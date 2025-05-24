@@ -1,12 +1,11 @@
 package com.programming.advanced.wordle.controller;
-import com.programming.advanced.wordle.MainApp;
-
 import java.io.IOException;
+
+import com.programming.advanced.wordle.MainApp;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 
 public class MenuController {
     // メニュー画面のコントローラー
@@ -14,16 +13,14 @@ public class MenuController {
     private Button playButon;
     @FXML
     private Button recordButton;
+    
     @FXML
-    private Label title;
-
-    @FXML
-    private void onPlayButtonClicked(ActionEvent e) throws IOException {
+    private void handlePlayAction(ActionEvent e) throws IOException {
         MainApp.setRoot("game");
     }
 
     @FXML
-    private void onRecordButtonClicked(ActionEvent e) throws IOException {
+    private void handleRecordAction(ActionEvent e) throws IOException {
         MainApp.setRoot("record");
     }
 
