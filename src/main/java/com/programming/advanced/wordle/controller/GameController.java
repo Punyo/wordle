@@ -1,5 +1,7 @@
 package com.programming.advanced.wordle.controller;
 
+import java.io.IOException;
+
 import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
@@ -256,5 +258,8 @@ public class GameController extends BaseController {
         }
     }
 
-    // TODO: ゲーム画面のロジック
+    // ゲームクリアのダイアログ
+    private void showGameClearDialog() throws IOException{
+		
+	}
 }
