@@ -9,9 +9,6 @@ public class Word {
     private int clearCount; // 正解された回数
     private int missCount; // 失敗された回数
 
-    public Word() {
-    }
-
     public Word(int id, String word, String normalizedWord, int playCount, int clearCount, int missCount) {
         this.id = id;
         this.word = word;
