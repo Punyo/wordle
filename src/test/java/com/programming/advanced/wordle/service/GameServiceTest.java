@@ -1,13 +1,14 @@
 package com.programming.advanced.wordle.service;
 
 import com.programming.advanced.wordle.dao.DatabaseInitializer;
+import com.programming.advanced.wordle.model.Word;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameServiceTest {
-    private static final String TEST_WORD = "おとしだま";
+    private static final Word TEST_WORD = new Word(1, "あいあーる", "あいあーる", 0, 0, 0);
     private static final int TEST_ATTEMPTS = 1;
     private static final int TEST_WORD_LENGTH = 5;
 
@@ -19,12 +20,12 @@ class GameServiceTest {
 
     @Test
     void testCheckWordLength() {
-        assertThrows(IllegalArgumentException.class, () -> GameService.getInstance().checkWord(TEST_WORD.substring(0, 3)));
+        assertThrows(IllegalArgumentException.class, () -> GameService.getInstance().checkWord(TEST_WORD.getNormalizedWord().substring(0, 3)));
     }
 
     @Test
     void testCheckWordCorrect() {
-        WordBoxStatus[] result = GameService.getInstance().checkWord(TEST_WORD);
+        WordBoxStatus[] result = GameService.getInstance().checkWord(TEST_WORD.getNormalizedWord());
         for (WordBoxStatus status : result) {
             assertEquals(WordBoxStatus.CORRECT, status);
         }
@@ -32,18 +33,18 @@ class GameServiceTest {
 
     @Test
     void testCheckWordStatus() {
-        String inputWord = "おほしさま";
+        String inputWord = "あいきゆー";
         WordBoxStatus[] result = GameService.getInstance().checkWord(inputWord);
         assertEquals(WordBoxStatus.CORRECT, result[0]);
-        assertEquals(WordBoxStatus.NOT_IN_WORD, result[1]);
-        assertEquals(WordBoxStatus.CORRECT, result[2]);
+        assertEquals(WordBoxStatus.CORRECT, result[1]);
+        assertEquals(WordBoxStatus.NOT_IN_WORD, result[2]);
         assertEquals(WordBoxStatus.NOT_IN_WORD, result[3]);
-        assertEquals(WordBoxStatus.CORRECT, result[4]);
+        assertEquals(WordBoxStatus.IN_WORD, result[4]);
     }
 
     @Test
     void testCheckWordNoRemainingAttempts() {
-        String inputWord = "おほしさま";
+        String inputWord = "あいきゆー";
         GameService.getInstance().checkWord(inputWord);
         assertThrows(IllegalStateException.class, () -> GameService.getInstance().checkWord(inputWord));
     }
