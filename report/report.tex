@@ -27,11 +27,37 @@
 }
 
 \title{タイトル}
-\author{名前}
 \date{\today}
 \author{\input{./authors.txt}}
 \begin{document}
 \maketitle
-\section{問題1}
+\section{概要}
+\section{プロジェクトの進め方}
+\section{機能}
+\section{実装}
+\subsection{com.programming.advanced.wordle.service}
+このパッケージには主にゲームの進行管理や判定ロジック等が実装されている。以下のクラスが含まれる。
+\begin{itemize}
+  \item \texttt{GameService}：ゲームの状態（正解単語、残り試行回数、単語長など）を管理し、ゲームの開始や入力単語の判定処理を行うSingletonであるクラスである。
+  \item \texttt{WordBoxStatus}：\texttt{GameService.checkWord(String inputWord)}での判定結果を表す列挙型。
+\end{itemize}
+
+それぞれのクラスの詳細を以下に示す。なお、getter/setterは省略する。
+\subsubsection{GameService.java}
+
+\begin{itemize}
+  \item \texttt{getInstance()}：\texttt{GameService}のインスタンスを取得する。
+  \item \texttt{startNewGame(String word, int attempts, int wordLength)}：新しいゲームを開始し、正解単語・試行回数・単語長をセットし、初期化フラグを立てる。
+  \item \texttt{checkWord(String inputWord)}：入力単語を正解単語と比較し、各文字ごとに\texttt{WordBoxStatus}（正解・含まれる・含まれない）を判定して返す。試行回数も減少する。\\
+  なお、引数の単語が正解の単語の長さと異なる場合、DBからのデータの読み取りに失敗した場合、試行回数が残っていない場合、\texttt{startNewGame} での初期化が行われていなかった場合は例外を投げる。さらに、入力語がDBに登録されていない場合はnullを返す。
+\end{itemize}
+
+\subsubsection{WordBoxStatus.java}
+
+\begin{itemize}
+  \item \texttt{CORRECT}：文字が正しい位置にある場合。
+  \item \texttt{NOT\_IN\_WORD}：文字が単語に含まれない場合。
+  \item \texttt{IN\_WORD}：文字が単語に含まれるが位置が違う場合。
+\end{itemize}
 
 \end{document}
