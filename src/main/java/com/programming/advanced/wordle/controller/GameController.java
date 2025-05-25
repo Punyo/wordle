@@ -11,6 +11,7 @@ import com.programming.advanced.wordle.service.GameService;
 import com.programming.advanced.wordle.service.WordBoxStatus;
 import com.programming.advanced.wordle.util.Latin2Hira;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -43,8 +44,6 @@ public class GameController extends BaseController {
 
     // ゲームの状態管理
     private TextField[][] gridCells;
-    private int currentRow = 0;
-    private int currentCol = 0;
 
     // ローマ字からひらがなに変換するやつ
     private Latin2Hira latin2Hira = new Latin2Hira();
@@ -56,6 +55,33 @@ public class GameController extends BaseController {
         GAME_SERVICE.startNewGame(WORD_DAO.getRandomWord(), MAX_TRIES, WORD_LENGTH);
         setupWordGrid();
         setupKeyboard();
+    }
+
+    private int getCurrentRow() {
+        return MAX_TRIES - GAME_SERVICE.getRemainingAttempts();
+    }
+
+    private TextField getCurrentCell() {
+        if (currentTryInput.isEmpty()) {
+            return gridCells[getCurrentRow()][currentTryInput.length()];
+        } else if (currentTryInput.length() < WORD_LENGTH) {
+            return gridCells[getCurrentRow()][currentTryInput.length()];
+        } else {
+            return gridCells[getCurrentRow()][WORD_LENGTH - 1];
+        }
+    }
+
+    private void setFocusOnCurrentCell() {
+        TextField currentCell = getCurrentCell();
+        currentCell.setEditable(true);
+        currentCell.requestFocus();
+    }
+
+    private void putLetterOnCurrentCell(char letter) {
+        TextField currentCell = getCurrentCell();
+        currentCell.setText(String.valueOf(letter));
+        currentTryInput += letter;
+        setFocusOnCurrentCell();
     }
 
     private void setupWordGrid() {
@@ -73,7 +99,7 @@ public class GameController extends BaseController {
         }
         // 最初のcellの編集権限とフォーカスを設定
         gridCells[0][0].setFocusTraversable(true);
-        gridCells[0][0].requestFocus();
+        setFocusOnCurrentCell();
     }
 
     private TextField createGridCell() {
@@ -87,24 +113,21 @@ public class GameController extends BaseController {
 
         // ひらがなに変換する
         cell.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.isEmpty()) {
-                return;
+            if (currentTryInput.length() < WORD_LENGTH) {
+                if (newValue.isEmpty()) {
+                    return;
+                }
+                // ひらがなに変換
+                String hiragana = latin2Hira.latin2Hira(newValue.toLowerCase());
+                Platform.runLater(() -> {
+                    for (char c : hiragana.toCharArray()) {
+                        putLetterOnCurrentCell(c);
+                        if (currentTryInput.length() >= WORD_LENGTH) {
+                            break;
+                        }
+                    }
+                });
             }
-            // ひらがなに変換
-            String hiragana = latin2Hira.latin2Hira(newValue.toLowerCase());
-            // 変換できない場合はそのまま表示
-            if (hiragana.isEmpty()) {
-                cell.setText(newValue);
-                return;
-            }
-            // // 変換後が1文字の場合
-            // if (hiragana.length() == 1) {
-            // cell.setText(hiragana);
-            // moveToNextCell();
-            // return;
-            // }
-            // 変換後が2文字以外の場合
-            enterInput(hiragana);
         });
 
         cell.setOnKeyReleased(e -> {
@@ -118,19 +141,6 @@ public class GameController extends BaseController {
         });
 
         return cell;
-    }
-
-    private void enterInput(String hiragana) {
-        if (currentCol + hiragana.length() <= WORD_LENGTH) {
-            StringBuilder currentTryInputBuilder = new StringBuilder(currentTryInput);
-            for (int i = 0; i < hiragana.length(); i++) {
-                gridCells[currentRow][currentCol + i].setText(String.valueOf(hiragana.charAt(i)));
-                currentTryInputBuilder.append(hiragana.charAt(i));
-            }
-            currentTryInput = currentTryInputBuilder.toString();
-            currentCol += hiragana.length() - 1;
-            moveToNextCell();
-        }
     }
 
     private void setupKeyboard() {
@@ -188,6 +198,7 @@ public class GameController extends BaseController {
             for (WordBoxStatus s : status) {
                 if (s != WordBoxStatus.CORRECT) {
                     isClear = false;
+                    break;
                 }
             }
             if (isClear) {
@@ -205,10 +216,10 @@ public class GameController extends BaseController {
                     e.printStackTrace();
                 }
             }
-            updateCurrentRowCellsColor(status);
+            updateCurrentRowCellsColor(status, getCurrentRow() - 1);
             updateKeyboardColor(status);
-            moveToNextRow();
             currentTryInput = "";
+            setFocusOnCurrentCell();
         }
 
     }
@@ -224,47 +235,18 @@ public class GameController extends BaseController {
         return button;
     }
 
-    // 次のcellに移動する
-    private void moveToNextCell() {
-        if (currentCol < WORD_LENGTH - 1) {
-            currentCol++;
-            gridCells[currentRow][currentCol].setEditable(true);
-            gridCells[currentRow][currentCol].requestFocus();
-        }
-    }
-
-    private void moveToNextRow() {
-        if (currentRow < MAX_TRIES) {
-            currentRow++;
-            currentCol = 0;
-            gridCells[currentRow][currentCol].setEditable(true);
-            gridCells[currentRow][currentCol].requestFocus();
-        }
-    }
-
     // backspaceの処理
     private void handleBackspace() {
-        if (currentCol > 0) {
-            TextField currentCell = gridCells[currentRow][currentCol];
-            if (!currentCell.getText().isEmpty()) {
-                // 現在のセルに文字がある場合は、その文字を消す
-                currentCell.setText("");
-            } else {
-                // 現在のセルが空の場合は、前のセルに移動
-                currentCol--;
-                currentCell = gridCells[currentRow][currentCol];
-                currentCell.setText("");
-                currentCell.setEditable(true);
-                currentCell.requestFocus();
-            }
-            if (!currentTryInput.isEmpty()) {
-                currentTryInput = currentTryInput.substring(0, currentTryInput.length() - 1);
-            }
+        if (!currentTryInput.isEmpty()) {
+            TextField currentCell = getCurrentCell();
+            currentCell.setText("");
+            currentTryInput = currentTryInput.substring(0, currentTryInput.length() - 1);
+            setFocusOnCurrentCell();
         }
     }
 
-    public void updateCurrentRowCellsColor(WordBoxStatus[] status) {
-        TextField[] cells = gridCells[currentRow];
+    public void updateCurrentRowCellsColor(WordBoxStatus[] status, int row) {
+        TextField[] cells = gridCells[row];
         for (int i = 0; i < cells.length; i++) {
             cells[i].getStyleClass().removeAll("correct-letter", "present-letter", "absent-letter");
 
@@ -298,11 +280,8 @@ public class GameController extends BaseController {
 
     // 文字キーの入力処理
     private void handleKeyPress(String letter) {
-        TextField currentCell = gridCells[currentRow][currentCol];
-        if (currentCol < WORD_LENGTH && currentCell.getText().isEmpty()) {
-            currentCell.setText(letter);
-            currentTryInput += letter;
-            moveToNextCell();
+        if (currentTryInput.length() <= WORD_LENGTH) {
+            putLetterOnCurrentCell(letter.charAt(0));
         }
     }
 

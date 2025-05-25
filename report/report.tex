@@ -27,10 +27,97 @@
 }
 
 \title{タイトル}
-\author{名前}
 \date{\today}
+\author{\input{./authors.txt}}
 \begin{document}
 \maketitle
-\section{問題1}
+\section{概要}
+本プロジェクトは、日本語の5文字単語を用いたWordle風パズルゲームである。ユーザーは制限回数内で正解の単語を推測し当てることを目指す。視覚的および操作的な体験（UI/UX）は、本家Wordle（\url{https://wordle.mottox2.com}）に準拠している。また、ゲーム開始・履歴表示・終了といった簡易メニュー画面の実装も行った。
+\section{プロジェクトの進め方}
+本プロジェクトを開始するにあたり、まずは要件定義を行い、必要な機能と非機能要件を明確にした。その後、各自の担当部分を決めて実装を進めた。
+\subsection{要件}
+\subsubsection{機能要件}
+\begin{itemize}
+  \item プレイごとにデータベースからランダムで1語を選出
+  \item ユーザーによる5文字入力受付
+  \item 入力語と正解語の一致度判定
+  \begin{itemize}
+    \item 正しい文字かつ正しい位置：緑
+    \item 正しい文字だが位置が違う：黄
+    \item 含まれていない文字：灰
+  \end{itemize}
+  \item 最大6回まで入力可能（失敗時はGame Over）
+  \item 勝敗結果と履歴はデータベースに記録
+\end{itemize}
+
+\subsubsection{追加機能（任意）}
+\begin{itemize}
+  \item メニュー画面（新規プレイ、履歴確認、終了）
+  \item 履歴表示（過去のゲームデータ）
+\end{itemize}
+
+\subsubsection{非機能要件}
+\begin{itemize}
+  \item データ永続化のためSQLiteを使用
+  \item 単体テストしやすい構造（デザインパターン活用）
+  \item 日本語入力対応（IME）
+\end{itemize}
+\subsection{役割分担}
+\begin{description}
+  \item[\input{./authorNameShort1.txt}：]\texttt{com.programming.advanced.wordle.service}、\texttt{com.programming.advanced.wordle.model}の実装やテスト、一部の\texttt{GameController}の実装を担当。
+  \item[\input{./authorNameShort2.txt}：]
+  \item[\input{./authorNameShort3.txt}：] 
+\end{description}
+\subsection{開発環境}
+本プロジェクトはJavaFXを使用してGUIの構築を行った。エディタにはVSCode、Eclipse、IntelliJ IDEAを使用し、ビルドツールにはMavenを採用した。データベースにはSQLite3を使用し、テストフレームワークにはJUnitを使用した。\\
+バージョン管理システムにはGitを使用し、GitHub上でリポジトリのホスティングを行い共同制作を行った。リポジトリのURLを以下に示す。
+\begin{center}
+  \url{https://github.com/Punyo/wordle}
+\end{center}
+また、Discordを用いて定期的に進捗報告や問題の共有を行った。
+\section{機能}
+\section{実装}
+\subsection{com.programming.advanced.wordle.service}
+このパッケージには主にゲームの進行管理や判定ロジック等が実装されている。以下のクラスが含まれる。
+\begin{itemize}
+  \item \texttt{GameService}：ゲームの状態（正解単語、残り試行回数、単語長など）を管理し、ゲームの開始や入力単語の判定処理を行うSingletonであるクラスである。
+  \item \texttt{WordBoxStatus}：\texttt{GameService.checkWord(String inputWord)}での判定結果を表す列挙型。
+  \item \texttt{GameServiceTest}：\texttt{GameService}のテストクラスで、JUnitを使用してゲームのロジックが正しく動作するかを確認する。
+  \item \texttt{GameServiceNotInitializedTest}：\texttt{GameService}が初期化されていない状態でのテストクラスで、ゲームの初期化が行われていない場合の挙動を確認する。
+\end{itemize}
+
+それぞれのクラスの詳細を以下に示す。なお、getter/setterは省略する。
+\subsubsection{GameService.java}
+
+\begin{itemize}
+  \item \texttt{getInstance()}：\texttt{GameService}のインスタンスを取得する。
+  \item \texttt{startNewGame(String word, int attempts, int wordLength)}：新しいゲームを開始し、正解単語・試行回数・単語長をセットし、初期化フラグを立てる。
+  \item \texttt{checkWord(String inputWord)}：入力単語を正解単語と比較し、各文字ごとに\texttt{WordBoxStatus}（正解・含まれる・含まれない）を判定して返す。試行回数も減少する。\\
+  なお、引数の単語が正解の単語の長さと異なる場合、DBからのデータの読み取りに失敗した場合、試行回数が残っていない場合、\texttt{startNewGame} での初期化が行われていなかった場合は例外を投げる。さらに、入力語がDBに登録されていない場合はnullを返す。
+\end{itemize}
+
+\subsubsection{WordBoxStatus.java}
+
+\begin{itemize}
+  \item \texttt{CORRECT}：文字が正しい位置にある場合。
+  \item \texttt{NOT\_IN\_WORD}：文字が単語に含まれない場合。
+  \item \texttt{IN\_WORD}：文字が単語に含まれるが位置が違う場合。
+\end{itemize}
+
+\subsubsection{GameServiceTest.java}
+
+\begin{itemize}
+  \item \texttt{testCheckWordLength()}：入力単語の長さが正解単語と異なる場合に\texttt{IllegalArgumentException}が投げられることを確認するテスト。
+  \item \texttt{testCheckWordCorrect()}：正解単語を入力した場合、すべての判定が\texttt{CORRECT}となることを確認するテスト。
+  \item \texttt{testCheckWordStatus()}：一部の文字が正解、一部が不正解の場合の判定結果（\texttt{CORRECT}、\texttt{NOT\_IN\_WORD}、\texttt{IN\_WORD}）が正しいことを確認するテスト。
+  \item \texttt{testCheckWordNoRemainingAttempts()}：試行回数が0になった後に入力した場合、\texttt{IllegalStateException}が投げられることを確認するテスト。
+  \item \texttt{testGetters()}：\texttt{GameService}のgetterメソッドが正しく値を返すことを確認するテスト。
+\end{itemize}
+
+\subsubsection{GameServiceNotInitializedTest.java}
+
+\begin{itemize}
+  \item \texttt{testCheckWordNotInitialized()}：\texttt{GameService}が初期化されていない状態で\texttt{checkWord}を呼び出した場合、\texttt{IllegalStateException}が投げられることを確認するテスト。
+\end{itemize}
 
 \end{document}
