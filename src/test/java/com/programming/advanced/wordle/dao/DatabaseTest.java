@@ -47,7 +47,7 @@ public class DatabaseTest {
             
             // 各テーブルの構造確認
             verifyTableStructure(stmt, "words", List.of(
-                "id INTEGER", "word TEXT", "playCount INTEGER", 
+                "id INTEGER", "word TEXT", "word_normalized TEXT", "playCount INTEGER", 
                 "clearCount INTEGER", "missCount INTEGER"));
             
             verifyTableStructure(stmt, "records", List.of(
