@@ -1,5 +1,8 @@
 target/
 wordle.db
+er.drawio
+.vscode/
 
 report/*
 !report/report.tex
+!report/er.png

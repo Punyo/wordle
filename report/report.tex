@@ -65,7 +65,7 @@
 \subsection{役割分担}
 \begin{description}
   \item[\input{./authorNameShort1.txt}：]\texttt{com.programming.advanced.wordle.service}、\texttt{com.programming.advanced.wordle.model}の実装やテスト、一部の\texttt{GameController}の実装を担当。
-  \item[\input{./authorNameShort2.txt}：]
+  \item[\input{./authorNameShort2.txt}：]\texttt{com.programming.advanced.wordle.dao}におけるDB周りの実装やテスト、DB作成時に利用するリソース(\path{wordle/src/main/resources})の作成を担当。
   \item[\input{./authorNameShort3.txt}：] 
 \end{description}
 \subsection{開発環境}
@@ -77,6 +77,57 @@
 また、Discordを用いて定期的に進捗報告や問題の共有を行った。
 \section{機能}
 \section{実装}
+\subsection{DB設計}
+本プロジェクトでは、SQLiteを使用してデータの永続化を実現している。データベースには以下の2つのテーブルが存在する。
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{er.png}
+\caption{ER図}
+\label{fig:er}
+\end{figure}
+
+\subsubsection{Wordsテーブル}
+単語データを管理するテーブル。以下のカラムを持つ。
+\begin{itemize}
+  \item \texttt{id}：単語の一意識別子（INTEGER、PRIMARY KEY、AUTOINCREMENT）
+  \item \texttt{word}：単語本体（TEXT、NOT NULL、UNIQUE、CHECK(length(word) = 5)）
+  \item \texttt{word\_normalized}：正規化された単語（TEXT、NOT NULL、UNIQUE、CHECK(length(word\_normalized) = 5)）
+  \item \texttt{playCount}：出題された回数（INTEGER、NOT NULL、DEFAULT 0）
+  \item \texttt{clearCount}：正解された回数（INTEGER、NOT NULL、DEFAULT 0）
+  \item \texttt{missCount}：失敗された回数（INTEGER、NOT NULL、DEFAULT 0）
+\end{itemize}
+
+\subsubsection{Recordsテーブル}
+プレイ記録を管理するテーブル。以下のカラムを持つ。
+\begin{itemize}
+  \item \texttt{id}：記録の一意識別子（INTEGER、PRIMARY KEY、AUTOINCREMENT）
+  \item \texttt{wordId}：出題された単語のID（INTEGER、NOT NULL、FOREIGN KEY）
+  \item \texttt{answerCount}：回答回数（INTEGER、NOT NULL）
+  \item \texttt{clear}：正解したかどうか（BOOLEAN、NOT NULL）
+  \item \texttt{date}：プレイ日時（DATE、NOT NULL）
+\end{itemize}
+
+\subsubsection{インデックス}
+検索の効率化のために、以下のインデックスを作成している。
+\begin{itemize}
+  \item \texttt{idx\_word\_normalized}：Wordsテーブルの\texttt{word\_normalized}カラムに対するインデックス
+\end{itemize}
+
+\subsubsection{制約}
+データの整合性を保つために、以下の制約を設定している。
+\begin{itemize}
+  \item Wordsテーブル
+  \begin{itemize}
+    \item 単語は必ず5文字であること
+    \item 単語と正規化された単語は一意であること
+  \end{itemize}
+  \item Recordsテーブル
+  \begin{itemize}
+    \item \texttt{wordId}はWordsテーブルの\texttt{id}を参照すること
+  \end{itemize}
+\end{itemize}
+
 \subsection{com.programming.advanced.wordle.service}
 このパッケージには主にゲームの進行管理や判定ロジック等が実装されている。以下のクラスが含まれる。
 \begin{itemize}
@@ -119,5 +170,106 @@
 \begin{itemize}
   \item \texttt{testCheckWordNotInitialized()}：\texttt{GameService}が初期化されていない状態で\texttt{checkWord}を呼び出した場合、\texttt{IllegalStateException}が投げられることを確認するテスト。
 \end{itemize}
+
+\subsection{com.programming.advanced.wordle.dao}
+このパッケージには主にデータベースアクセスに関する実装が含まれている。以下のクラスが含まれる。
+\begin{itemize}
+  \item \texttt{WordDAO}：単語データの取得や検索を行うクラス。
+  \item \texttt{RecordDAO}：プレイ記録の保存や統計情報の更新を行うクラス。
+  \item \texttt{DatabaseInitializer}：データベースの初期化やテーブル作成を行うクラス。
+\end{itemize}
+
+それぞれのクラスの詳細を以下に示す。
+
+\subsubsection{WordDAO.java}
+\begin{itemize}
+  \item \texttt{getRandomWord()}：データベースからランダムな単語を1つ取得する。
+  \item \texttt{getWordById(int id)}：指定されたIDの単語を取得する。
+  \item \texttt{getWordIdByWord(String word)}：指定された単語がデータベースに存在するか確認し、存在する場合はそのIDを返す。
+\end{itemize}
+
+\subsubsection{RecordDAO.java}
+\begin{itemize}
+  \item \texttt{saveRecord(RecordDTO dto)}：プレイ記録を保存し、単語の統計情報（プレイ回数、クリア回数、失敗回数）を更新する。トランザクション管理を行い、データの整合性を保証する。
+\end{itemize}
+
+\subsubsection{DatabaseInitializer.java}
+\begin{itemize}
+  \item \texttt{initializeDatabase()}：データベースの初期化を行う。SQLite JDBCドライバの登録、テーブルの作成、インデックスの作成を行う。
+  \item \texttt{insertInitialWords(Connection conn)}：初期データとしてwords.txtから単語を読み込み、データベースに追加する。
+\end{itemize}
+
+\subsubsection{DatabaseTest.java}
+\begin{itemize}
+  \item \texttt{testDatabaseConnection()}：データベースの接続とテーブル構造を確認するテスト。以下の項目を検証する。
+  \begin{itemize}
+    \item 必要なテーブル（words、records）が存在すること
+    \item 各テーブルのカラム定義が正しいこと
+  \end{itemize}
+  \item \texttt{testSaveRecordAndGetAllRecords()}：レコードの保存と取得をテストする。以下の項目を検証する。
+  \begin{itemize}
+    \item クリア記録の保存が成功すること
+    \item 失敗記録の保存が成功すること
+    \item 全レコードの取得が正しく行われること
+    \item 最新のレコードが失敗記録であること
+    \item 2番目のレコードがクリア記録であること
+  \end{itemize}
+  \item \texttt{testWordStatisticsUpdate()}：単語の統計情報の更新をテストする。以下の項目を検証する。
+  \begin{itemize}
+    \item クリア記録保存後の統計情報が正しく更新されること
+    \item 失敗記録保存後の統計情報が正しく更新されること
+    \item プレイ回数、クリア回数、失敗回数が期待通りに増加すること
+  \end{itemize}
+\end{itemize}
+
+\subsection{単語データの作成}
+\subsubsection{単語データの作成プロセス}
+Wordsテーブルに挿入する初期データは、以下の手順で作成した。
+
+\begin{enumerate}
+  \item 語彙データの取得
+  \begin{itemize}
+    \item 松下語学学習ラボ（\url{http://www17408ui.sakura.ne.jp/tatsum/database.html}）から語彙データを取得
+    \item 取得したデータは、単語とその読み方、品詞情報を含むCSVファイル形式
+  \end{itemize}
+  
+  \item 単語の抽出と変換
+  \begin{itemize}
+    \item 作成したPythonスクリプト（\texttt{extract\_five\_letter\_words.py}）を使用
+    \item CSVファイルから5文字の単語を抽出
+    \item カタカナの読みをひらがなに変換
+    \item 正規化処理を適用（小文字を大文字に変換など）
+    \item 重複を除去
+  \end{itemize}
+  
+  \item データベースへの登録
+  \begin{itemize}
+    \item 抽出した単語を\texttt{words.txt}として保存
+    \item データベース初期化時に\texttt{words.txt}から単語を読み込み
+    \item 現在のデータ数は2,090個
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{extract\_five\_letter\_words.py}
+このスクリプトは、データベースに登録する5文字の単語を抽出するために使用される。以下の機能を実装している。
+\begin{itemize}
+  \item \texttt{katakana\_to\_hiragana(katakana\_str)}：カタカナをひらがなに変換する関数。伸ばし棒（ー）はそのまま保持する。
+  \item \texttt{normalize\_word(word)}：単語を正規化する関数。小文字を大文字に変換し、以下の変換を行う。
+  \begin{itemize}
+    \item ぁ→あ、ぃ→い、ぅ→う、ぇ→え、ぉ→お
+    \item っ→つ
+    \item ゃ→や、ゅ→ゆ、ょ→よ
+  \end{itemize}
+  \item \texttt{has\_diacritical\_marks(text)}：テキストに濁点・半濁点が含まれているかを判定する関数。
+  \item \texttt{extract\_five\_letter\_words(input\_csv, output\_txt)}：CSVファイルから5文字の単語を抽出し、テキストファイルに出力する関数。以下の条件で単語を抽出する。
+  \begin{itemize}
+    \item 5文字の単語であること
+    \item カタカナのみで構成されていること（伸ばし棒は許可）
+    \item 品詞が「名詞-普通名詞-一般」であること
+    \item 濁点・半濁点を含まないこと
+    \item 正規化後に重複しないこと
+  \end{itemize}
+\end{itemize}
+
 
 \end{document}
