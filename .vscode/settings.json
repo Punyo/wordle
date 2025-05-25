@@ -1,3 +1,11 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cloudlatex.enabled": true,
+    "cloudlatex.outDir": "pdf",
+    "cloudlatex.projectId": 1093164,
+    "latex-workshop.latex.autoCompile.run": "never",
+    "latex-workshop.latex.outDir": "pdf",
+    "[latex]": {
+      "editor.formatOnSave": false,
+    }
 }
