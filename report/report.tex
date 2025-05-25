@@ -40,6 +40,8 @@
 \begin{itemize}
   \item \texttt{GameService}：ゲームの状態（正解単語、残り試行回数、単語長など）を管理し、ゲームの開始や入力単語の判定処理を行うSingletonであるクラスである。
   \item \texttt{WordBoxStatus}：\texttt{GameService.checkWord(String inputWord)}での判定結果を表す列挙型。
+  \item \texttt{GameServiceTest}：\texttt{GameService}のテストクラスで、JUnitを使用してゲームのロジックが正しく動作するかを確認する。
+  \item \texttt{GameServiceNotInitializedTest}：\texttt{GameService}が初期化されていない状態でのテストクラスで、ゲームの初期化が行われていない場合の挙動を確認する。
 \end{itemize}
 
 それぞれのクラスの詳細を以下に示す。なお、getter/setterは省略する。
@@ -58,6 +60,22 @@
   \item \texttt{CORRECT}：文字が正しい位置にある場合。
   \item \texttt{NOT\_IN\_WORD}：文字が単語に含まれない場合。
   \item \texttt{IN\_WORD}：文字が単語に含まれるが位置が違う場合。
+\end{itemize}
+
+\subsubsection{GameServiceTest.java}
+
+\begin{itemize}
+  \item \texttt{testCheckWordLength()}：入力単語の長さが正解単語と異なる場合に\texttt{IllegalArgumentException}が投げられることを確認するテスト。
+  \item \texttt{testCheckWordCorrect()}：正解単語を入力した場合、すべての判定が\texttt{CORRECT}となることを確認するテスト。
+  \item \texttt{testCheckWordStatus()}：一部の文字が正解、一部が不正解の場合の判定結果（\texttt{CORRECT}、\texttt{NOT\_IN\_WORD}、\texttt{IN\_WORD}）が正しいことを確認するテスト。
+  \item \texttt{testCheckWordNoRemainingAttempts()}：試行回数が0になった後に入力した場合、\texttt{IllegalStateException}が投げられることを確認するテスト。
+  \item \texttt{testGetters()}：\texttt{GameService}のgetterメソッドが正しく値を返すことを確認するテスト。
+\end{itemize}
+
+\subsubsection{GameServiceNotInitializedTest.java}
+
+\begin{itemize}
+  \item \texttt{testCheckWordNotInitialized()}：\texttt{GameService}が初期化されていない状態で\texttt{checkWord}を呼び出した場合、\texttt{IllegalStateException}が投げられることを確認するテスト。
 \end{itemize}
 
 \end{document}
