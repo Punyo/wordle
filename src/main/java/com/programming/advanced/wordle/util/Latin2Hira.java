@@ -54,7 +54,7 @@ public class Latin2Hira {
         m.put("ro", "ろ");
         m.put("wa", "わ");
         m.put("wo", "を");
-        m.put("n", "ん");
+        m.put("nn", "ん");
 
         m.put("ga", "か");
         m.put("gi", "き");
