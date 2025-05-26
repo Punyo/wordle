@@ -69,7 +69,7 @@
   \item[\input{./authorNameShort3.txt}：] 
 \end{description}
 \subsection{開発環境}
-本プロジェクトはJavaFXを使用してGUIの構築を行った。エディタにはVSCode、Eclipse、IntelliJ IDEAを使用し、ビルドツールにはMavenを採用した。データベースにはSQLite3を使用し、テストフレームワークにはJUnitを使用した。\\
+本プロジェクトはJavaFXを使用してGUIの構築を行った。エディタにはVSCode、Eclipse、IntelliJ IDEAを使用し、ビルドツールにはMavenを採用した。データベースにはSQLite3を使用し、テストフレームワークにはJUnitを使用した。FXMLファイルの作成には、JavaFX Scene Builderを使用した。\\
 バージョン管理システムにはGitを使用し、GitHub上でリポジトリのホスティングを行い共同制作を行った。リポジトリのURLを以下に示す。
 \begin{center}
   \url{https://github.com/Punyo/wordle}
@@ -82,7 +82,7 @@
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{er.png}
+% \includegraphics[width=0.8\textwidth]{er.png}
 \caption{ER図}
 \label{fig:er}
 \end{figure}
@@ -169,6 +169,75 @@
 
 \begin{itemize}
   \item \texttt{testCheckWordNotInitialized()}：\texttt{GameService}が初期化されていない状態で\texttt{checkWord}を呼び出した場合、\texttt{IllegalStateException}が投げられることを確認するテスト。
+\end{itemize}
+
+\subsection{com.programming.advanced.wordle.controller}
+このパッケージには、ゲームの各画面を管理するコントローラクラスと、それに関連する機能が実装されている。以下のクラスが含まれる。
+
+\subsubsection{GameController.java}
+プレイ画面を管理するコントローラクラス。\texttt{BaseController.java}を継承し、ゲームの進行やユーザー入力の処理を行う。
+
+\begin{itemize}
+  \item \texttt{initialize()}：ゲームを初期化し、新しい単語を取得してグリッドとキーボードを構築する。
+  \item \texttt{getCurrentRow()}：現在の試行行番号を取得する。
+  \item \texttt{getCurrentCell()}：現在の文字入力位置に対応するセルを取得する。
+  \item \texttt{setFocusOnCurrentCell()}：現在の入力セルにフォーカスを当てる。
+  \item \texttt{putLetterOnCurrentCell(char letter)}：指定した文字を現在のセルに入力し、現在の単語に追加する。
+  \item \texttt{setupWordGrid()}：ゲーム用のマス目（TextField）のグリッドを構築し、初期状態の入力可能セルを設定する。
+  \item \texttt{createGridCell()}：文字マス（TextField）を生成し、入力された文字をひらがなに変換する処理やフォーカス制御を行う。
+  \item \texttt{setupKeyboard()}：50音配列に従って仮想キーボードを構築する。また、BackspaceキーとEnterキーを追加する。
+  \item \texttt{createActionKeyButton(String text)}：BackspaceやEnterなどのアクションキーを生成する。
+  \item \texttt{handleEnter()}：現在の単語を\texttt{GameService}に渡して判定し、正解またはゲームオーバーならダイアログを表示する。そうでない場合は結果に応じてセルとキーボードの色を更新する。
+  \item \texttt{createKeyboardButton(String text)}：文字キーのボタンを生成し、押下時に文字を入力するように設定する。
+  \item \texttt{handleBackspace()}：入力中の単語から最後の文字を削除し、対応するセルの表示も削除する。
+  \item \texttt{updateCurrentRowCellsColor(WordBoxStatus[] status, int row)}：指定行のセルに判定結果に応じた色を適用する。
+  \item \texttt{updateKeyboardColor(WordBoxStatus[] status)}：現在の単語の各文字に対応するキーボードボタンの色を判定結果に基づいて更新する。
+  \item \texttt{handleKeyPress(String letter)}：仮想キーボードからの文字入力に応じてセルに文字を入力する。
+  \item \texttt{showGameDialog(boolean isClear)}：ゲームクリアまたは失敗時に結果ダイアログを表示し、記録を保存する。
+\end{itemize}
+
+\subsubsection{MenuController.java}
+メニュー画面を管理するコントローラクラス。
+\begin{itemize}
+\item \texttt{handlePlayAction(ActionEvent e)}：プレイボタンが押されたときに呼び出され、ゲーム画面（\texttt{game}）へ遷移する処理を行う。
+\item \texttt{handleRecordAction(ActionEvent e)}：記録ボタンが押されたときに呼び出され、記録表示画面（\texttt{record}）へ遷移する処理を行う。
+\end{itemize}
+
+
+\subsubsection{RecordController.java}
+記録画面を管理するコントローラクラス。
+
+\begin{itemize}
+  \item \texttt{playTableView}：記録を表示するためのテーブルビュー。
+  \item \texttt{dateColumn}：ゲームを行った日付を表示するカラム。
+  \item \texttt{answerColumn}：ゲームの解答語を表示するカラム。
+  \item \texttt{tryCountColumn}：解答までにかかった試行回数を表示するカラム。
+  \item \texttt{isClearColumn}：ゲームをクリアしたかどうかのフラグを表示するカラム。「クリア」または「失敗」と表示されるようにカスタマイズされている。
+  \item \texttt{initialize()}：
+  \begin{itemize}
+    \item 各カラムに対して、\texttt{PropertyValueFactory} を用いてデータのプロパティを紐づけている。
+    \item \texttt{isClearColumn} に対してカスタムセルファクトリを設定し、クリア状態を日本語で表示。
+    \item \texttt{RecordDAO} を利用してデータベースから全記録を取得し、\texttt{ObservableList} に変換してテーブルに設定。
+    \item テーブルビューは編集不可・フォーカス不要に設定。
+    \item 各カラムは並べ替え可能であり、再配置は不可に設定。
+    \item テーブルメニューボタンの非表示化、および自動リサイズポリシーの設定。
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{GameDialogController.java}
+ゲーム終了時に表示するダイアログ画面を管理するコントローラクラス。
+
+\begin{itemize}
+\item \texttt{initializeDialog(boolean isGameClear, int tryCount)}：ゲーム終了時の結果に応じて、\texttt{resultLabel} に「ゲームクリア」または「ゲームオーバー」と表示し、\texttt{tryCountLabel} に試行回数を表示する。
+\item \texttt{handlePlayAgainButton(ActionEvent e)}：\texttt{GameService} の \texttt{resetGame()} を呼び出してゲーム状態を初期化し、現在のウィンドウを閉じてゲーム画面に遷移する。
+\item \texttt{handleReturnToMenuButton(ActionEvent e)}：\texttt{GameService} の \texttt{resetGame()} を呼び出してゲーム状態を初期化し、現在のウィンドウを閉じてメニュー画面に遷移する。
+\end{itemize}
+
+\subsubsection{BaseController.java}
+\texttt{GameController}と\texttt{MenuController}の親クラスであり、共通する機能を実装している。
+
+\begin{itemize}
+\item \texttt{handleReturnToMenuButton(ActionEvent e)}：メニュー画面に遷移する。共通の「戻る」ボタンの処理として、他のコントローラーで継承して使用される。
 \end{itemize}
 
 \subsection{com.programming.advanced.wordle.dao}
@@ -271,5 +340,48 @@ Wordsテーブルに挿入する初期データは、以下の手順で作成し
   \end{itemize}
 \end{itemize}
 
+
+\subsection{FXMLファイル}
+このセクションでは、JavaFXを使用して作成されたFXMLファイルについて説明する。それぞれのFXMLファイルは、対応するコントローラクラスと連携して画面のレイアウトや動作を定義している。
+
+\subsubsection{game.fxml}
+プレイ画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
+\begin{itemize}
+  \item 単語入力用のテキストフィールド
+  \item 入力結果を表示するグリッド
+  \item 残り試行回数を表示するラベル
+  \item 「送信」ボタン
+\end{itemize}
+
+\subsubsection{menu.fxml}
+メニュー画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
+\begin{itemize}
+  \item 「新規プレイ」ボタン
+  \item 「履歴確認」ボタン
+  \item 「終了」ボタン
+\end{itemize}
+
+\subsubsection{record.fxml}
+記録画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
+\begin{itemize}
+  \item プレイ履歴を表示するテーブルビュー
+  \item 各列には以下の情報を表示
+  \begin{itemize}
+    \item プレイ日時
+    \item 正解単語
+    \item 試行回数
+    \item 成功/失敗の結果
+  \end{itemize}
+  \item 「戻る」ボタン
+\end{itemize}
+
+\subsubsection{gameDialog.fxml}
+ゲーム終了時に表示されるダイアログ画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
+\begin{itemize}
+  \item ゲーム結果（成功/失敗）を表示するラベル
+  \item 正解単語を表示するラベル
+  \item 「メニューに戻る」ボタン
+  \item 「再プレイ」ボタン
+\end{itemize}
 
 \end{document}
