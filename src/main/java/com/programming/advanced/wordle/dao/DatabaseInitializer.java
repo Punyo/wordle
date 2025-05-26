@@ -26,11 +26,15 @@ public class DatabaseInitializer {
                     "CREATE TABLE IF NOT EXISTS words (" +
                     "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "    word TEXT NOT NULL UNIQUE CHECK(length(word) = 5)," +
+                    "    word_normalized TEXT NOT NULL UNIQUE CHECK(length(word_normalized) = 5)," +
                     "    playCount INTEGER NOT NULL DEFAULT 0," +
                     "    clearCount INTEGER NOT NULL DEFAULT 0," +
                     "    missCount INTEGER NOT NULL DEFAULT 0" +
                     ")";
                 stmt.execute(createWordsTable);
+                
+                // word_normalizedカラムにインデックスを作成
+                stmt.execute("CREATE INDEX IF NOT EXISTS idx_word_normalized ON words(word_normalized)");
                 
                 // Recordsテーブルの作成
                 String createRecordsTable = 
@@ -43,20 +47,6 @@ public class DatabaseInitializer {
                     "    FOREIGN KEY (wordId) REFERENCES words(id)" +
                     ")";
                 stmt.execute(createRecordsTable);
-                
-                // Inputsテーブルの作成
-                String createInputsTable = 
-                    "CREATE TABLE IF NOT EXISTS inputs (" +
-                    "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "    recordId INTEGER NOT NULL," +
-                    "    wordId INTEGER," +
-                    "    word TEXT NOT NULL CHECK(length(word) = 5)," +
-                    "    placeCorrectCount INTEGER NOT NULL CHECK(placeCorrectCount BETWEEN 0 AND 5)," +
-                    "    charCorrectCount INTEGER NOT NULL CHECK(charCorrectCount BETWEEN 0 AND 5)," +
-                    "    FOREIGN KEY (recordId) REFERENCES records(id)," +
-                    "    FOREIGN KEY (wordId) REFERENCES words(id)" +
-                    ")";
-                stmt.execute(createInputsTable);
                 
                 // 初期データの追加
                 insertInitialWords(conn);
@@ -98,14 +88,39 @@ public class DatabaseInitializer {
         }
         
         // 単語の追加
-        String insertSql = "INSERT INTO words (word) VALUES (?)";
+        String insertSql = "INSERT INTO words (word, word_normalized) VALUES (?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
             for (String word : words) {
                 pstmt.setString(1, word);
+                pstmt.setString(2, normalizeWord(word));
                 pstmt.executeUpdate();
             }
             System.out.println(words.size() + "個の単語を追加しました");
         }
+    }
+    
+    /**
+     * 単語を正規化します（小文字を大文字に変換）
+     * @param word 正規化する単語
+     * @return 正規化された単語
+     */
+    private static String normalizeWord(String word) {
+        StringBuilder normalized = new StringBuilder();
+        for (char c : word.toCharArray()) {
+            switch (c) {
+                case 'ぁ': normalized.append('あ'); break;
+                case 'ぃ': normalized.append('い'); break;
+                case 'ぅ': normalized.append('う'); break;
+                case 'ぇ': normalized.append('え'); break;
+                case 'ぉ': normalized.append('お'); break;
+                case 'っ': normalized.append('つ'); break;
+                case 'ゃ': normalized.append('や'); break;
+                case 'ゅ': normalized.append('ゆ'); break;
+                case 'ょ': normalized.append('よ'); break;
+                default: normalized.append(c);
+            }
+        }
+        return normalized.toString();
     }
     
     // データベース接続を取得する

@@ -37,7 +37,7 @@ public class DatabaseTest {
             // テーブル一覧の取得
             try (ResultSet rs = stmt.executeQuery(
                     "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")) {
-                List<String> tables = List.of("words", "records", "inputs");
+                List<String> tables = List.of("words", "records");
                 while (rs.next()) {
                     String tableName = rs.getString("name");
                     assertTrue(tables.contains(tableName), 
@@ -47,16 +47,12 @@ public class DatabaseTest {
             
             // 各テーブルの構造確認
             verifyTableStructure(stmt, "words", List.of(
-                "id INTEGER", "word TEXT", "playCount INTEGER", 
+                "id INTEGER", "word TEXT", "word_normalized TEXT", "playCount INTEGER", 
                 "clearCount INTEGER", "missCount INTEGER"));
             
             verifyTableStructure(stmt, "records", List.of(
                 "id INTEGER", "wordId INTEGER", "answerCount INTEGER", 
                 "clear BOOLEAN", "date DATE"));
-            
-            verifyTableStructure(stmt, "inputs", List.of(
-                "id INTEGER", "recordId INTEGER", "wordId INTEGER", 
-                "word TEXT", "placeCorrectCount INTEGER", "charCorrectCount INTEGER"));
         }
     }
     
