@@ -66,7 +66,7 @@
 \begin{description}
   \item[\input{./authorNameShort1.txt}：]\texttt{com.programming.advanced.wordle.service}、\texttt{com.programming.advanced.wordle.model}の実装やテスト、一部の\texttt{GameController}の実装を担当。
   \item[\input{./authorNameShort2.txt}：]\texttt{com.programming.advanced.wordle.dao}におけるDB周りの実装やテスト、DB作成時に利用するリソース(\path{wordle/src/main/resources})の作成を担当。
-  \item[\input{./authorNameShort3.txt}：] 
+  \item[\input{./authorNameShort3.txt}：] JavaFX を用いた GUI の構築および \texttt{BaseController} などのコントローラクラスの実装を担当。ローマ字をひらがなに変換する処理を実装。
 \end{description}
 \subsection{開発環境}
 本プロジェクトはJavaFXを使用してGUIの構築を行った。エディタにはVSCode、Eclipse、IntelliJ IDEAを使用し、ビルドツールにはMavenを採用した。データベースにはSQLite3を使用し、テストフレームワークにはJUnitを使用した。FXMLファイルの作成には、JavaFX Scene Builderを使用した。\\
@@ -412,5 +412,22 @@ JavaFXを使用して作成されたFXMLファイルについてプレビュー�
 \caption{gameDialog.fxmlのプレビュー}
 \label{fig:gameDialog_fxml}
 \end{figure}
+
+\subsection{ローマ字からひらがなへの変換}
+ゲームプレイ時に、ユーザーがキーボードからローマ字で入力した文字をひらがなに変換するためのクラスを実装した。
+\subsubsection{Latin2Hira.java}
+\begin{itemize}
+\item \texttt{Latin2Hira()}：ローマ字とひらがなを対応付ける \texttt{HashMap} を初期化する。
+清音・濁音（が/ぎ など）・半濁音（ぱ/ぴ など）、拗音（kya/sha など）、
+長音記号「ー」を含む主要な組み合わせを登録するが、濁点付き文字は清音（か/さ など）にマッピングする。  
+\item \texttt{latin2Hira(String s)}：ローマ字文字列 \texttt{s} をひらがなに変換して返す。  
+      \begin{enumerate}
+        \item 入力をすべて小文字化する。  
+        \item 同一子音が連続する場合に促音「っ」を追加し、次の文字を処理する。  
+        \item 3 文字→2 文字→1 文字の順で最長一致検索を行い、辞書に存在するローマ字シーケンスをひらがなへ変換して \texttt{StringBuilder} に追加する。  
+        \item 変換結果を文字列として返す。  
+      \end{enumerate}
+\item \texttt{isConsonant(char c)}：引数 \texttt{c} が子音（a--z のうち母音を除く）かどうかを判定し、連続子音による促音「っ」の検出に利用する。  
+\end{itemize}
 
 \end{document}
