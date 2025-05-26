@@ -132,6 +132,11 @@ public class GameController extends BaseController {
 
         cell.setOnKeyReleased(e -> {
             switch (e.getCode()) {
+                case ENTER:
+                    if (currentTryInput.length() >= WORD_LENGTH) {
+                        handleEnter();
+                    }
+                    break;
                 case BACK_SPACE:
                     handleBackspace();
                     break;
