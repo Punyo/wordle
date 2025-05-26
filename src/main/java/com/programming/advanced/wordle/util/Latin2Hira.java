@@ -18,12 +18,15 @@ public class Latin2Hira {
         m.put("ko", "こ");
         m.put("sa", "さ");
         m.put("si", "し");
+        m.put("shi", "し");
         m.put("su", "す");
         m.put("se", "せ");
         m.put("so", "そ");
         m.put("ta", "た");
         m.put("ti", "ち");
+        m.put("chi", "ち");
         m.put("tu", "つ");
+        m.put("tsu", "つ");
         m.put("te", "て");
         m.put("to", "と");
         m.put("na", "な");
