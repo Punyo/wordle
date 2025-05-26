@@ -247,7 +247,8 @@
 このパッケージには、ゲームの各画面を管理するコントローラクラスと、それに関連する機能が実装されている。以下のクラスが含まれる。
 
 \subsubsection{GameController.java}
-プレイ画面を管理するコントローラクラス。\texttt{BaseController.java}を継承し、ゲームの進行やユーザー入力の処理を行う。
+プレイ画面を管理するコントローラクラス。\texttt{BaseController.java}を継承し、ゲームの進行やユーザー入力の処理を行う。\\
+なお、\texttt{updateCurrentRowCellsColor(WordBoxStatus[] status, int row)}と \\ \texttt{updateKeyboardColor(WordBoxStatus[] status)}には、Java 17で新たに採用された言語仕様であるswitchのパターンマッチングを使用している。これにより、判定結果に応じた処理を簡潔に記述できる。
 
 \begin{itemize}
   \item \texttt{initialize()}：ゲームを初期化し、新しい単語を取得してグリッドとキーボードを構築する。
