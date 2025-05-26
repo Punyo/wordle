@@ -5,4 +5,4 @@ er.drawio
 
 report/*
 !report/report.tex
-!report/er.png
+!report/*.png
