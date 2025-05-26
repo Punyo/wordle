@@ -341,47 +341,76 @@ Wordsテーブルに挿入する初期データは、以下の手順で作成し
 \end{itemize}
 
 
-\subsection{FXMLファイル}
-このセクションでは、JavaFXを使用して作成されたFXMLファイルについて説明する。それぞれのFXMLファイルは、対応するコントローラクラスと連携して画面のレイアウトや動作を定義している。
+\subsection{GUIの作成}
+JavaFXを使用して作成されたFXMLファイルについてプレビュー画像とともに説明する。それぞれのFXMLファイルは、対応するコントローラクラスと連携して画面のレイアウトや動作を定義している。
 
 \subsubsection{game.fxml}
-プレイ画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
+
 \begin{itemize}
-  \item 単語入力用のテキストフィールド
-  \item 入力結果を表示するグリッド
-  \item 残り試行回数を表示するラベル
-  \item 「送信」ボタン
+  \item \texttt{returnToMenuButton}：メニュー画面に戻るためのボタン。\\
+  クリック時に\texttt{handleReturnToMenuButton}メソッドが呼び出される。
+  \item タイトル：画面上部に「WORDLE」というタイトルを表示する\texttt{Label}。
+  \item \texttt{wordgrid}：単語入力用のグリッド。中央に配置され、各セル間に5pxの間隔が設定されている。
+  \item \texttt{keyboard}：仮想キーボード用のグリッド。中央に配置され、各キー間に2pxの間隔が設定されている。
 \end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{game_preview.png}
+\caption{game.fxmlのプレビュー}
+\label{fig:game_fxml}
+\end{figure}
 
 \subsubsection{menu.fxml}
-メニュー画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
 \begin{itemize}
-  \item 「新規プレイ」ボタン
-  \item 「履歴確認」ボタン
-  \item 「終了」ボタン
+  \item タイトル：画面中央上部に「WORDLE」というタイトルを表示する\texttt{Label}。
+  \item \texttt{playButton}：ゲームを開始するためのボタン。クリック時に\texttt{handlePlayAction}メソッドが呼び出される。
+  \item \texttt{recordButton}：ゲームの記録を確認するためのボタン。クリック時に\texttt{handleRecordAction}メソッドが呼び出される。
 \end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{menu_preview.png}
+\caption{menu.fxmlのプレビュー}
+\label{fig:menu_fxml}
+\end{figure}
 
 \subsubsection{record.fxml}
-記録画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
+
 \begin{itemize}
-  \item プレイ履歴を表示するテーブルビュー
-  \item 各列には以下の情報を表示
+  \item \texttt{returnToMenuButton}：メニュー画面に戻るためのボタン。クリック時に\texttt{handleReturnToMenuButton}メソッドが呼び出される。
+  \item タイトル：画面上部に「遊んだ記録」というタイトルを表示する\texttt{Label}。
+  \item \texttt{playTableView}：プレイ記録を表示するテーブルビュー。以下の列を持つ：
   \begin{itemize}
-    \item プレイ日時
-    \item 正解単語
-    \item 試行回数
-    \item 成功/失敗の結果
+    \item \texttt{dateColumn}：プレイした日付を表示する列。
+    \item \texttt{answerColumn}：正解の単語を表示する列。
+    \item \texttt{tryCountColumn}：解答回数を表示する列。
+    \item \texttt{isClearColumn}：ゲームの結果（クリア/失敗）を表示する列。
   \end{itemize}
-  \item 「戻る」ボタン
 \end{itemize}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{record_preview.png}
+\caption{record.fxmlのプレビュー}
+\label{fig:record_fxml}
+\end{figure}
+
 \subsubsection{gameDialog.fxml}
-ゲーム終了時に表示されるダイアログ画面のレイアウトを定義するFXMLファイル。このファイルでは以下の要素が含まれる。
+
 \begin{itemize}
-  \item ゲーム結果（成功/失敗）を表示するラベル
-  \item 正解単語を表示するラベル
-  \item 「メニューに戻る」ボタン
-  \item 「再プレイ」ボタン
+  \item \texttt{resultLabel}：ゲームの結果（クリアまたはゲームオーバー）を表示するラベル。
+  \item \texttt{answerLabel}：正解の単語を表示するラベル。
+  \item \texttt{tryCountLabel}：試行回数を表示するラベル。
+  \item \texttt{playAgainButton}：「もう一度プレイする」ボタン。クリック時に\texttt{handlePlayAgainButton}メソッドが呼び出される。
+  \item \texttt{returnToMenuButton}：「メニューに戻る」ボタン。クリック時に\texttt{handleReturnToMenuButton}メソッドが呼び出される。
 \end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{gameDialog_preview.png}
+\caption{gameDialog.fxmlのプレビュー}
+\label{fig:gameDialog_fxml}
+\end{figure}
 
 \end{document}
