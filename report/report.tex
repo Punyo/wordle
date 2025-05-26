@@ -50,7 +50,7 @@
   \item 勝敗結果と履歴はデータベースに記録
 \end{itemize}
 
-\subsubsection{追加機能（任意）}
+\subsubsection{追加機能}
 \begin{itemize}
   \item メニュー画面（新規プレイ、履歴確認、終了）
   \item 履歴表示（過去のゲームデータ）
@@ -66,7 +66,7 @@
 \begin{description}
   \item[\input{./authorNameShort1.txt}：]\texttt{com.programming.advanced.wordle.service}、\texttt{com.programming.advanced.wordle.model}の実装やテスト、一部の\texttt{GameController}の実装を担当。
   \item[\input{./authorNameShort2.txt}：]\texttt{com.programming.advanced.wordle.dao}におけるDB周りの実装やテスト、DB作成時に利用するリソース(\path{wordle/src/main/resources})の作成を担当。
-  \item[\input{./authorNameShort3.txt}：] JavaFX を用いた GUI の構築および \texttt{BaseController} などのコントローラクラスの実装を担当。ローマ字をひらがなに変換する処理を実装。
+  \item[\input{./authorNameShort3.txt}：]\texttt{com.programming.advanced.wordle.controller}の実装、JavaFX を用いた GUIの構築、ローマ字をひらがなに変換する処理の実装を担当。
 \end{description}
 \subsection{開発環境}
 本プロジェクトはJavaFXを使用してGUIの構築を行った。エディタにはVSCode、Eclipse、IntelliJ IDEAを使用し、ビルドツールにはMavenを採用した。データベースにはSQLite3を使用し、テストフレームワークにはJUnitを使用した。FXMLファイルの作成には、JavaFX Scene Builderを使用した。\\
@@ -76,6 +76,78 @@
 \end{center}
 また、Discordを用いて定期的に進捗報告や問題の共有を行った。
 \section{機能}
+プロジェクトで実装した主要機能を説明する。
+
+\subsection{ゲームプレイ機能}
+\begin{description}
+  \item[ランダム出題]%
+    \texttt{WordDAO.getRandomWord()} を用いて
+    \texttt{Words} テーブルから1語を一様ランダムに選出し、
+    \texttt{GameService} に渡してゲームを開始する。
+  \item[入力受付]%
+    キーボードからの直接入力と、GUIキーボードによる
+    ローマ字入力の両方を受け付ける。
+    ローマ字は \texttt{Latin2Hira} クラスでかな変換を行う。
+  \item[判定ロジック]%
+    \texttt{GameService.checkWord()} において
+    入力単語と正解単語を 1 文字ずつ比較し，
+    判定結果を列挙型 \texttt{WordBoxStatus}%
+    （\texttt{CORRECT}／\texttt{IN\_WORD}／\texttt{NOT\_IN\_WORD}）
+    で返却する。
+  \item[試行回数管理]%
+    6 回まで推測をし，残りの試行回数は
+    \texttt{GameService} 内部でデクリメントして管理する。
+  \item[ゲーム終了処理]%
+    正解時または試行回数消費時に
+    \texttt{GameDialogController} を呼び出し，
+    ダイアログを表示して結果を通知する。
+\end{description}
+
+\subsection{データ管理機能}
+\begin{description}
+  \item[記録保存]%
+    各ゲーム終了時に
+    \texttt{RecordDAO.saveRecord(RecordDTO)} を通じて
+    \texttt{Records} テーブルに以下の情報を保存する。
+    \begin{itemize}
+      \item 出題単語 ID
+      \item 試行回数
+      \item クリア成否
+      \item プレイ日時
+    \end{itemize}
+  \item[統計更新]%
+    同一トランザクション内で
+    \texttt{Words} テーブルの統計カラム
+    （出題回数・クリア回数・失敗回数）を更新することで，
+    データの整合性を確保する。
+  \item[履歴取得]%
+    \texttt{RecordDAO.getAllRecords()} を利用し，
+    \texttt{RecordController} がテーブルビューに
+    最新順で表示する。
+\end{description}
+
+\subsection{ユーザーインタフェース機能}
+\begin{description}
+  \item[メニュー画面]%
+    \texttt{MenuController} により
+    新規プレイ／履歴確認を選択できる。
+  \item[プレイ画面]%
+    \texttt{GameController} が
+    \emph{単語グリッド} と \emph{仮想キーボード} を生成し，
+    判定結果に応じてセルおよびキーボードの色を
+    \texttt{CSS} クラスで動的に切り替える。
+  \item[履歴画面]%
+    \texttt{RecordController} が
+    \texttt{Records} テーブルの内容を
+    \texttt{TableView} に表示し，
+    列ごとの並べ替えをサポートする。
+  \item[ダイアログ]%
+    \texttt{GameDialogController} で
+    ゲーム結果・試行回数・正解単語を表示し，
+    「もう一度プレイ」／「メニューへ戻る」の
+    いずれかを選択できる。
+\end{description}
+
 \section{実装}
 \subsection{DB設計}
 本プロジェクトでは、SQLiteを使用してデータの永続化を実現している。データベースには以下の2つのテーブルが存在する。
