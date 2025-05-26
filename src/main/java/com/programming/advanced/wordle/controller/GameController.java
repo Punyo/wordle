@@ -295,8 +295,10 @@ public class GameController extends BaseController {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("gameDialog.fxml"));
             Parent root = loader.load();
             GameDialogController controller = loader.getController();
-            controller.initializeDialog(isClear, GAME_SERVICE.getRemainingAttempts(), GAME_SERVICE.getCurrentWord().getWord());
-            RECORD_DAO.saveRecord(new RecordDTO(GAME_SERVICE.getCurrentWord().getId(), GAME_SERVICE.getRemainingAttempts(), isClear));
+            controller.initializeDialog(isClear, GAME_SERVICE.getRemainingAttempts(),
+                    GAME_SERVICE.getCurrentWord().getWord());
+            RECORD_DAO.saveRecord(new RecordDTO(GAME_SERVICE.getCurrentWord().getId(),
+                    MAX_TRIES - GAME_SERVICE.getRemainingAttempts(), isClear));
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
